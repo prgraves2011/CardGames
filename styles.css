@@ -1,3 +1,75 @@
 body {
-    background-color: rgb(143, 248, 255);
+    margin: 0;
+    padding: 0;
+}
+
+.freecell-board {
+    padding: 16px;
+    background-color: aquamarine;
+}
+
+.top-row {
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 24px;
+    background-color: bisque;
+}
+
+.freecells,
+.foundations {
+    display: flex;
+    gap: 12px;
+    background-color: burlywood;
+}
+
+.cell {
+    width: 100px;
+    height: 140px;
+    border-radius: 6px;
+    background-color: aliceblue;
+}
+
+.tableau {
+    display: grid;
+    grid-template-columns: repeat(8, 90px);
+    gap: 16px;
+    justify-content: center;
+    background-color: chartreuse;
+}
+
+.column {
+    position: relative;
+    min-height: 500px;
+    width: 100px;
+    background-color: cornsilk;
+    outline: 1px dashed rgba(255,255,255,0.4);
+}
+
+.bottom-menu {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+    height: 60px;
+
+    display: flex;
+    justify-content: center; /* centers the row horizontally */
+    align-items: center;     /* centers buttons vertically */
+
+    gap: 12px;               /* space between buttons */
+    background-color: #222;  /* optional */
+}
+
+.menu-btn {
+    font-weight: bold;
+    padding: 8px 16px;
+}
+
+.card {
+    position: absolute;
+    top: calc(var(--stack-index) * 25px);
+    left: 0;
+    width: 100px;
+    height: 140px;
 }
