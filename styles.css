@@ -22,7 +22,9 @@ body {
     background-color: burlywood;
 }
 
-.cell {
+.cell,
+.freecell {
+    position: relative;
     width: 100px;
     height: 140px;
     border-radius: 6px;

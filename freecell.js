@@ -28,21 +28,86 @@ for ( let i = deck.length -1; i > 0; i--) {
 }
 
 // deal cards
-
-
 for (let i = 0; i < 52; i++) {
-  const columnIndex = i % 8;
-  const stackIndex = Math.floor(i / 8);
+    const columnIndex = i % 8;
+    const stackIndex = Math.floor(i / 8);
 
-  const card = document.createElement('img');
-  card.className = 'card';
-  card.src = `cards/${deck[i]}.png`;
-  card.alt = deck[i];
-  card.draggable = false;
+    const card = document.createElement('img');
+    card.className = 'card';
+    card.src = `cards/${deck[i]}.png`;
+    card.alt = deck[i];
+    card.draggable = false;
 
-  card.style.setProperty('--stack-index', stackIndex);
-  columns[columnIndex].appendChild(card);
+    card.style.setProperty('--stack-index', stackIndex);
+    columns[columnIndex].appendChild(card);
 }
+
+// calculate stack positions
+function updateStackIndices(container) {
+    const cards = [...container.querySelectorAll('.card')];
+    cards.forEach((card, index) => {
+        card.style.setProperty('--stack-index', index);
+    });
+}
+
+// prevent drag defaults
+document.addEventListener('dragstart', e => e.preventDefault());
+
+// card movement setup
+let dragCard = null;
+let dragOffsetX = 0;
+let dragOffsetY = 0;
+let sourceContainer = null;
+
+// mouse clicks
+document.addEventListener('mousedown', (e) => {
+    const card = e.target.closest('.card');
+    if (!card) return;
+
+    draggedCard = card;
+    sourceContainer = card.parentElement;
+
+    const rect = card.getBoundingClientRect();
+    dragOffsetX = e.clientX - rect.left;
+    dragOffsetY = e.clientY - rect.top;
+
+    card.style.left = `${rect.left}px`;
+    card.style.top  = `${rect.top}px`;
+    card.style.zIndex = 1000;
+    card.style.pointerEvents = 'none';
+
+    document.body.appendChild(card);
+});
+
+// mouse moves
+document.addEventListener('mousemove', (e) => {
+    if (!draggedCard) return;
+
+    draggedCard.style.left = `${e.clientX - dragOffsetX}px`;
+    draggedCard.style.top  = `${e.clientY - dragOffsetY}px`;
+});
+
+// drop card - mouse up
+document.addEventListener('mouseup', (e) => {
+    if (!draggedCard) return;
+
+    const dropTarget = e.target.closest('.column, .cell');
+    const target = dropTarget || sourceContainer;
+
+    target.appendChild(draggedCard);
+    draggedCard.style.left = '';
+    draggedCard.style.top = '';
+    draggedCard.style.zIndex = '';
+    draggedCard.style.pointerEvents = '';
+
+    updateStackIndices(target);
+    if (target !== sourceContainer) {
+        updateStackIndices(sourceContainer);
+    }
+
+    draggedCard = null;
+    sourceContainer = null;
+});
 
 
 // close listener
