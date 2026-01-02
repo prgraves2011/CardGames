@@ -1,34 +1,37 @@
+:root {
+    --deepColour: rgb(26, 54, 45);
+}
+
 body {
     margin: 0;
     padding: 0;
+    background-color: aquamarine;
 }
 
 .freecell-board {
     padding: 16px;
-    background-color: aquamarine;
 }
 
 .top-row {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
+    gap: 96px;
     margin-bottom: 24px;
-    background-color: bisque;
 }
 
 .freecells,
 .foundations {
     display: flex;
     gap: 12px;
-    background-color: burlywood;
 }
 
-.cell,
-.freecell {
+.freecell,
+.foundation {
     position: relative;
     width: 100px;
     height: 140px;
     border-radius: 6px;
-    background-color: aliceblue;
+    background-color: var(--deepColour);
 }
 
 .tableau {
@@ -36,15 +39,12 @@ body {
     grid-template-columns: repeat(8, 90px);
     gap: 16px;
     justify-content: center;
-    background-color: chartreuse;
 }
 
 .column {
     position: relative;
     min-height: 500px;
     width: 100px;
-    background-color: cornsilk;
-    outline: 1px dashed rgba(255,255,255,0.4);
 }
 
 .bottom-menu {
@@ -56,11 +56,11 @@ body {
     height: 60px;
 
     display: flex;
-    justify-content: center; /* centers the row horizontally */
-    align-items: center;     /* centers buttons vertically */
+    justify-content: center;
+    align-items: center;
 
-    gap: 12px;               /* space between buttons */
-    background-color: #222;  /* optional */
+    gap: 12px;
+    background-color: var(--deepColour)
 }
 
 .menu-btn {
@@ -70,8 +70,16 @@ body {
 
 .card {
     position: absolute;
-    top: calc(var(--stack-index) * 25px);
     left: 0;
     width: 100px;
     height: 140px;
+}
+
+.column .card {
+    top: calc(var(--stack-index) * 25px);
+}
+
+.foundation .card,
+.freecell .card {
+    top: 0;
 }

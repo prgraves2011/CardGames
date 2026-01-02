@@ -1,6 +1,52 @@
 // open listener
 document.addEventListener('DOMContentLoaded', () => {
 
+// card rank values
+const rank_val = {
+    A: 1,
+    '2': 2,
+    '3': 3,
+    '4': 4,
+    '5': 5,
+    '6': 6,
+    '7': 7,
+    '8': 8,
+    '9': 9,
+    '10': 10,
+    J: 11,
+    Q: 12,
+    K: 13,
+};
+
+// card identity parsing
+function parseCard(cardEl) {
+    const id = cardEl.alt; // e.g.: '10H'
+    const suit = id.slice(-1);
+    const rank = id.slice(0, -1);
+    return { rank, suit };
+}
+
+// foundation acceptance check
+function canPlaceOnFoundation (cardEl, foundationEl) {
+    const { rank, suit} = parseCard(cardEl);
+    const cards = [...foundationEl.children].filter(el => el.classList.contains('card'));
+
+    // TEMP - LOG CHECK
+    console.log('Foundation check:', parseCard(cardEl), foundationEl.children.length);
+
+    // empty foundation - ACE only
+    if (cards.length === 0) {
+        return rank === 'A';
+    }
+
+    const topCard = cards[cards.length - 1];
+    const top = parseCard(topCard);
+
+    return (
+        suit === top.suit &&
+        rank_val[rank] === rank_val[top.rank] +1
+    );
+}
 
 // create cards
 const suits = ['H', 'D', 'C', 'S'];
@@ -50,16 +96,16 @@ function updateStackIndices(container) {
     });
 }
 
-// prevent drag defaults
+// prevent drag native behaviour
 document.addEventListener('dragstart', e => e.preventDefault());
 
-// card movement setup
-let dragCard = null;
+// drag state variables
+let draggedCard = null;
 let dragOffsetX = 0;
 let dragOffsetY = 0;
 let sourceContainer = null;
 
-// mouse clicks
+// mouse down events
 document.addEventListener('mousedown', (e) => {
     const card = e.target.closest('.card');
     if (!card) return;
@@ -79,7 +125,7 @@ document.addEventListener('mousedown', (e) => {
     document.body.appendChild(card);
 });
 
-// mouse moves
+// mouse move
 document.addEventListener('mousemove', (e) => {
     if (!draggedCard) return;
 
@@ -87,14 +133,43 @@ document.addEventListener('mousemove', (e) => {
     draggedCard.style.top  = `${e.clientY - dragOffsetY}px`;
 });
 
+// freecell occupancy check
+function isFreeCellEmpty(cell) {
+    return cell.querySelectorAll('.card').length === 0;
+}
+
+
 // drop card - mouse up
 document.addEventListener('mouseup', (e) => {
     if (!draggedCard) return;
 
-    const dropTarget = e.target.closest('.column, .cell');
-    const target = dropTarget || sourceContainer;
+    // TEMP - LOG CHECK
+    console.log('mouseup target:', e.target);
+    console.log('mouseup target classes:', e.target.className);
+
+    const dropTarget = e.target.closest('.foundation, .freecell, .column');
+    let target = dropTarget || sourceContainer;
+
+    // reject occupied freecell
+    if (
+        dropTarget &&
+        dropTarget.classList.contains('freecell') &&
+        !isFreeCellEmpty(dropTarget)
+    ) {
+        target = sourceContainer;
+    }
+
+    // reject invalid foundation move
+    if (
+        dropTarget &&
+        dropTarget.classList.contains('foundation') &&
+        !canPlaceOnFoundation(draggedCard, dropTarget)
+    ) {
+        target = sourceContainer;
+    }
 
     target.appendChild(draggedCard);
+
     draggedCard.style.left = '';
     draggedCard.style.top = '';
     draggedCard.style.zIndex = '';
@@ -105,8 +180,14 @@ document.addEventListener('mouseup', (e) => {
         updateStackIndices(sourceContainer);
     }
 
+    // freecell stack index reset
+    if (target.classList.contains('freecell')) {
+        draggedCard.style.setProperty('--stack-index', 0);
+    }
+
     draggedCard = null;
     sourceContainer = null;
+
 });
 
 
