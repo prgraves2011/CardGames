@@ -153,7 +153,7 @@ function updateStackIndices(container) {
 document.addEventListener('dragstart', e => e.preventDefault());
 
 // drag state variables
-let draggedCard = null;
+let draggedStack = null;
 let dragOffsetX = 0;
 let dragOffsetY = 0;
 let sourceContainer = null;
@@ -163,27 +163,33 @@ document.addEventListener('mousedown', (e) => {
     const card = e.target.closest('.card');
     if (!card) return;
 
-    draggedCard = card;
     sourceContainer = card.parentElement;
+    draggedStack = getMovingStack(card);
 
     const rect = card.getBoundingClientRect();
     dragOffsetX = e.clientX - rect.left;
     dragOffsetY = e.clientY - rect.top;
 
-    card.style.left = `${rect.left}px`;
-    card.style.top  = `${rect.top}px`;
-    card.style.zIndex = 1000;
-    card.style.pointerEvents = 'none';
+draggedStack.forEach((c,i) => {
+    const r = c.getBoundingClientRect();
 
-    document.body.appendChild(card);
+        c.style.left = `${r.left}px`;
+        c.style.top  = `${r.top}px`;
+        c.style.zIndex = 1000 + i;
+        c.style.pointerEvents = 'none';
+
+        document.body.appendChild(c);
+    });
 });
 
 // mouse move
 document.addEventListener('mousemove', (e) => {
-    if (!draggedCard) return;
+    if (draggedStack.length === 0) return;
 
-    draggedCard.style.left = `${e.clientX - dragOffsetX}px`;
-    draggedCard.style.top  = `${e.clientY - dragOffsetY}px`;
+    draggedStack.forEach((card, i) => {
+        card.style.left = `${e.clientX - dragOffsetX}px`;
+        card.style.top  = `${e.clientY - dragOffsetY + i * 30}px`;
+    });
 });
 
 // freecell occupancy check
@@ -194,14 +200,14 @@ function isFreeCellEmpty(cell) {
 
 // drop card - mouse up
 document.addEventListener('mouseup', (e) => {
-    if (!draggedCard) return;
+    if (draggedStack.length === 0) return;
 
     const dropTarget = e.target.closest('.foundation, .freecell, .column');
     let target = dropTarget || sourceContainer;
 
-    const stack = getMovingStack(draggedCard);
+    const leadCard = draggedStack[0];
 
-    // reject occupied freecell
+    // ── Freecell rule ─────────────────────────────
     if (
         dropTarget &&
         dropTarget.classList.contains('freecell') &&
@@ -210,42 +216,51 @@ document.addEventListener('mouseup', (e) => {
         target = sourceContainer;
     }
 
-    // reject invalid foundation move
+    // ── Foundation rule (single card only) ─────────
     if (
         dropTarget &&
         dropTarget.classList.contains('foundation') &&
-        !canPlaceOnFoundation(draggedCard, dropTarget)
+        (
+            draggedStack.length !== 1 ||
+            !canPlaceOnFoundation(leadCard, dropTarget)
+        )
     ) {
         target = sourceContainer;
     }
 
-    // reject invalid column stack move
+    // ── Column rule (stack-aware) ──────────────────
     if (
         dropTarget &&
         dropTarget.classList.contains('column') &&
-        !canPlaceStackOnColumn(stack, dropTarget)
+        !canPlaceStackOnColumn(draggedStack, dropTarget)
     ) {
         target = sourceContainer;
     }
 
-    // append entire stack
-    stack.forEach(card => target.appendChild(card));
+    // ── Commit move (atomic stack append) ──────────
+    draggedStack.forEach(card => target.appendChild(card));
 
-    draggedCard.style.left = '';
-    draggedCard.style.top = '';
-    draggedCard.style.zIndex = '';
-    draggedCard.style.pointerEvents = '';
+    // ── Cleanup dragged styles ─────────────────────
+    draggedStack.forEach(card => {
+        card.style.left = '';
+        card.style.top = '';
+        card.style.zIndex = '';
+        card.style.pointerEvents = '';
+    });
 
+    // ── Recalculate visual stacks ──────────────────
     updateStackIndices(target);
     if (target !== sourceContainer) {
         updateStackIndices(sourceContainer);
     }
 
+    // ── Freecell stack index reset ─────────────────
     if (target.classList.contains('freecell')) {
-        draggedCard.style.setProperty('--stack-index', 0);
+        draggedStack[0].style.setProperty('--stack-index', 0);
     }
 
-    draggedCard = null;
+    // ── Reset drag state ───────────────────────────
+    draggedStack = [];
     sourceContainer = null;
 });
 
