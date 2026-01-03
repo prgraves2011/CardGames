@@ -101,6 +101,26 @@ function canPlaceOnFoundation (cardEl, foundationEl) {
     );
 }
 
+// hlper functions for 'max-move-stack' rule
+function countEmptyFreeCells () {
+    return document.querySelectorAll('.freecell:empty').length;
+}
+
+function countEmptyFreeColumns () {
+    return document.querySelectorAll('.column:empty').length;
+}
+
+function maxMoveableStckSize() {
+    const freeCells = countEmptyFreeCells();
+    const emptyCols = countEmptyFreeColumns();
+    return (freeCells +1) * Math.pow(2, emptyCols);
+}
+
+// ...validation function
+function canMoveStack(stack) {
+    return stack.length <= maxMoveableStckSize();
+}
+
 // create cards
 const suits = ['H', 'D', 'C', 'S'];
 const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
@@ -160,8 +180,11 @@ let sourceContainer = null;
 
 // mouse down events
 document.addEventListener('mousedown', (e) => {
+
     const card = e.target.closest('.card');
     if (!card) return;
+
+    if (card.closest('.foundation')) return;
 
     sourceContainer = card.parentElement;
     draggedStack = getMovingStack(card);
@@ -233,6 +256,15 @@ document.addEventListener('mouseup', (e) => {
         dropTarget &&
         dropTarget.classList.contains('column') &&
         !canPlaceStackOnColumn(draggedStack, dropTarget)
+    ) {
+        target = sourceContainer;
+    }
+
+    // Max moveable stack rule
+    if (
+        dropTarget &&
+        dropTarget.classList.contains('column') &&
+        !canMoveStack(draggedStack)
     ) {
         target = sourceContainer;
     }
