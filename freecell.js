@@ -101,7 +101,7 @@ function canPlaceOnFoundation (cardEl, foundationEl) {
     );
 }
 
-// hlper functions for 'max-move-stack' rule
+// helper functions for 'max-move-stack' rule
 function countEmptyFreeCells () {
     return document.querySelectorAll('.freecell:empty').length;
 }
@@ -184,6 +184,7 @@ document.addEventListener('mousedown', (e) => {
     const card = e.target.closest('.card');
     if (!card) return;
 
+    // prevent drags from foundations
     if (card.closest('.foundation')) return;
 
     sourceContainer = card.parentElement;
@@ -211,7 +212,7 @@ document.addEventListener('mousemove', (e) => {
 
     draggedStack.forEach((card, i) => {
         card.style.left = `${e.clientX - dragOffsetX}px`;
-        card.style.top  = `${e.clientY - dragOffsetY + i * 30}px`;
+        card.style.top  = `${e.clientY - dragOffsetY + i * 25}px`;
     });
 });
 
