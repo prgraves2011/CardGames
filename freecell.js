@@ -1,6 +1,24 @@
 // open listener
 document.addEventListener('DOMContentLoaded', () => {
 
+// theme switching
+const themeButtons = document.querySelectorAll('.theme-btn');
+
+themeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // remove active class from all buttons
+        themeButtons.forEach(b => b.classList.remove('active'));
+
+        // add active class to clicked button
+        btn.classList.add('active');
+
+        // apply theme to root element
+        const theme = btn.dataset.theme;
+        document.documentElement.setAttribute('data-theme', theme);
+
+    })
+})
+
 // card rank values
 const rank_val = {
     A: 1,

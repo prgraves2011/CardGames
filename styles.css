@@ -1,11 +1,25 @@
+/* colour themes */
 :root {
     --deepColour: rgb(26, 54, 45);
+    --bgColour: aquamarine;
+}
+:root[data-theme="green"] {
+    --deepColour: rgb(26, 54, 45);
+    --bgColour: aquamarine;
+}
+:root[data-theme="blue"] {
+    --deepColour: rgb(25, 42, 86);
+    --bgColour: lightblue;
+}
+:root[data-theme="black"] {
+    --deepColour: rgb(44, 44, 44);
+    --bgColour: rgb(206, 206, 206);
 }
 
 body {
     margin: 0;
     padding: 0;
-    background-color: aquamarine;
+    background-color: var(--bgColour);
 }
 
 .freecell-board {
@@ -59,13 +73,24 @@ body {
     justify-content: center;
     align-items: center;
 
-    gap: 12px;
+    gap: 50px;
     background-color: var(--deepColour)
 }
 
+.menu-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
 .menu-btn {
+    background-color: var(--bgColour);
+    color: var(--deepColour);
     font-weight: bold;
     padding: 8px 16px;
+    height: 40px;
+    gap: 8px;
 }
 
 .card {
@@ -82,4 +107,33 @@ body {
 .foundation .card,
 .freecell .card {
     top: 0;
+}
+
+.theme-toggle {
+    display: flex;
+    gap: 8px;
+}
+
+.theme-btn {
+    width: 40px;
+    height: 40px;
+    border: 3px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.theme-btn.active {
+    border-color: white;
+}
+
+.theme-green {
+    background-color: aquamarine;
+}
+
+.theme-blue {
+    background-color: lightblue;
+}
+
+.theme-black {
+    background-color: rgb(206, 206, 206);
 }
