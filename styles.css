@@ -1,15 +1,19 @@
 /* colour themes */
 :root {
-    --deepColour: rgb(26, 54, 45);
-    --bgColour: aquamarine;
+    --deepColour: rgb(25, 42, 86);
+    --bgColour: lightblue;
+}
+:root[data-theme="blue"] {
+    --deepColour: rgb(25, 42, 86);
+    --bgColour: lightblue;
 }
 :root[data-theme="green"] {
     --deepColour: rgb(26, 54, 45);
     --bgColour: aquamarine;
 }
-:root[data-theme="blue"] {
-    --deepColour: rgb(25, 42, 86);
-    --bgColour: lightblue;
+:root[data-theme="brown"] {
+    --deepColour: rgb(71, 33, 8);
+    --bgColour: rgb(255, 231, 201);
 }
 :root[data-theme="black"] {
     --deepColour: rgb(44, 44, 44);
@@ -84,6 +88,13 @@ body {
     gap: 8px;
 }
 
+.theme-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
 .menu-btn {
     background-color: var(--bgColour);
     color: var(--deepColour);
@@ -91,6 +102,38 @@ body {
     padding: 8px 16px;
     height: 40px;
     gap: 8px;
+    border: 2px, solid, transparent;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.theme-btn {
+    width: 40px;
+    height: 40px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.theme-btn.active {
+    outline: 1px solid var(--bgColour);
+    outline-offset: 2px;
+}
+
+.theme-blue {
+    background-color: lightblue;
+}
+
+.theme-green {
+    background-color: aquamarine;
+}
+
+.theme-brown {
+    background-color: rgb(255, 231, 201);
+}
+
+.theme-black {
+    background-color: rgb(206, 206, 206);
 }
 
 .card {
@@ -107,33 +150,4 @@ body {
 .foundation .card,
 .freecell .card {
     top: 0;
-}
-
-.theme-toggle {
-    display: flex;
-    gap: 8px;
-}
-
-.theme-btn {
-    width: 40px;
-    height: 40px;
-    border: 3px solid transparent;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.theme-btn.active {
-    border-color: white;
-}
-
-.theme-green {
-    background-color: aquamarine;
-}
-
-.theme-blue {
-    background-color: lightblue;
-}
-
-.theme-black {
-    background-color: rgb(206, 206, 206);
 }
