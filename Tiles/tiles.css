@@ -1,0 +1,47 @@
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center; /* horizontal */
+  align-items: center;     /* vertical */
+  overflow: hidden;
+}
+
+.grid {
+    display: inline-grid;
+    grid-template-columns: repeat(4, max-content);
+    grid-template-rows: repeat(4, max-content);
+    padding: 10px;
+    background-color: rgb(64, 115, 255);
+    gap: 100px 100px;
+    border-radius: 6px;
+}
+
+.cell {
+    display: flex;
+    width: 120px;
+    height: 120px;
+    padding: 10px;
+    background-color: aquamarine;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border-radius: 6px;
+    font-weight: bolder;
+}
+
+.tile {
+    display: flex;
+    width: 100px;
+    height: 100px;
+    background-color: rgb(0, 83, 104);
+    align-items: center;
+    border-radius: 6px;
+    justify-content: center;
+}
+
+.cell:not(:has(*))::before {
+  content: "(empty)";
+  font-style: italic;
+  color: black;
+  opacity: 0.5;
+}
