@@ -4,25 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CardGames</title>
+    <link rel="stylesheet" href="solitaire.css">
+    <link rel="stylesheet" href="freecell.css">    
 </head>
 <body>
-    <div class="game-board"></div>
+    <div id="game-container"></div>
 
     <div class="bottom-menu">
-
         <div class="menu-buttons">
-            <button class="menu-btn">Game Menu</button>
+            <button class="menu-btn" id="btn-solitaire" onclick="loadGame('solitaire')">Solitair</button>
+            <button class="menu-btn" id="btn-freecell" onclick="loadGame('freecell')">Frecell</button>
             <button class="menu-btn" id="reset-btn">Reset Game</button>
-            <button class="menu-btn">Undo</button>
         </div>
-
         <div class="theme-toggle">
             <button class="theme-btn theme-blue active" data-theme="blue"></button>
             <button class="theme-btn theme-green" data-theme="green"></button>
             <button class="theme-btn theme-brown" data-theme="brown"></button>
             <button class="theme-btn theme-black" data-theme="black"></button>
         </div>
-  
-</div>
+    </div>
+
+    <script src="main.js"></script>
+    <script src="solitaire.js"></script>
+    <script src="freecell.js"></script>
 </body>
 </html>
