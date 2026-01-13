@@ -1,23 +1,3 @@
-// open listener
-document.addEventListener('DOMContentLoaded', () => {
-
-// theme switching
-const themeButtons = document.querySelectorAll('.theme-btn');
-
-themeButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        // remove active class from all buttons
-        themeButtons.forEach(b => b.classList.remove('active'));
-
-        // add active class to clicked button
-        btn.classList.add('active');
-
-        // apply theme to root element
-        const theme = btn.dataset.theme;
-        document.documentElement.setAttribute('data-theme', theme);
-
-    })
-})
 
 // card rank values
 const rank_val = {
@@ -88,7 +68,6 @@ function canPlaceStackOnColumn(stack, columnEl) {
     );
 }
 
-
 // card identity parsing
 function parseCard(cardEl) {
     const id = cardEl.alt; // e.g.: '10H'
@@ -152,10 +131,20 @@ for (let i = 0; i < 8; i++) {
 // deal initial game
 dealNewGame();
 
-// reset game button
-document.getElementById('reset-btn').addEventListener('click', () => {
+function initFreecell() {
+
+    // NOW get the columns (they exist now)
+    const columns = [];
+    for (let i = 0; i < 8; i++) {
+        columns.push(document.getElementById(`col-${i}`));
+    }
+    
+    // Store globally so dealNewGame can access it
+    window.freecellColumns = columns;
+
+    // deal the game
     dealNewGame();
-});
+}
 
 // deal new game
 function dealNewGame() {
@@ -194,8 +183,6 @@ function dealNewGame() {
         columns[columnIndex].appendChild(card);
     }
 }
-
-
 
 // calculate stack positions
 function updateStackIndices(container) {
@@ -256,7 +243,6 @@ document.addEventListener('mousemove', (e) => {
 function isFreeCellEmpty(cell) {
     return cell.querySelectorAll('.card').length === 0;
 }
-
 
 // drop card - mouse up
 document.addEventListener('mouseup', (e) => {
@@ -333,6 +319,7 @@ document.addEventListener('mouseup', (e) => {
     sourceContainer = null;
 });
 
-
-// close listener
+// reset game button
+document.getElementById('reset-btn').addEventListener('click', () => {
+    dealNewGame();
 });

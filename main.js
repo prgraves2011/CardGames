@@ -14,8 +14,10 @@ function loadGame(gameName) {
     //load selected game
     if (gameName === 'freecell') {
         loadFreecell(container);
+        console.log("Loading Freecell");
     } else if (gameName === 'solitaire') {
         loadSolitaire(container);
+        console.log("Loading Solitaire");
     }
 
     currentGame = gameName;
@@ -23,6 +25,15 @@ function loadGame(gameName) {
 
 // load initial game - freecell
 loadGame('freecell');
+
+// reset current game
+function resetCurrentGame() {
+    if (currentGame === 'freecell') {
+        dealNewGame();
+    } else if (currentGame === 'solitaire') {
+        resetSolitaire();
+    }
+}
 
 // FREECELL loader
 function loadFreecell(container) {
@@ -34,10 +45,12 @@ function loadFreecell(container) {
 
     // create freecell-set
     const freecellSet = document.createElement ('div');
+    freecellSet.className = 'freecells';
     topRow.appendChild(freecellSet);
 
     // create foundation-set
     const foundationSet = document.createElement ('div');
+    foundationSet.className = 'foundations';
     topRow.appendChild(foundationSet);
 
     // create FOUR freecells
@@ -48,7 +61,7 @@ function loadFreecell(container) {
         freecellSet.appendChild(cell);
     }
 
-    // create foundations
+    // create FOUR foundations
     for (let i = 0; i < 4; i++) {
         const cell = document.createElement ('div');
         cell.className = 'foundation';
@@ -58,6 +71,7 @@ function loadFreecell(container) {
 
     // create tableau
     const tableau = document.createElement ('div');
+    tableau.className = 'tableau';
     container.appendChild(tableau);
 
     // create columns
@@ -67,9 +81,37 @@ function loadFreecell(container) {
         column.id = `col-${i}`;
         tableau.appendChild(column);
     }
+
+    // init freecell after DOM is built
+    initFreecell();
 }
 
 // SOLITAIRE loader
 function loadSolitaire(container) {
     // JS here
 }
+
+// open listener - for theme switcher
+document.addEventListener('DOMContentLoaded', () => {
+
+    // theme switching
+    const themeButtons = document.querySelectorAll('.theme-btn');
+
+    themeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+
+            // remove active class from all buttons
+            themeButtons.forEach(b => b.classList.remove('active'));
+
+            // add active class to clicked button
+            btn.classList.add('active');
+
+            // apply theme to root element
+            const theme = btn.dataset.theme;
+            document.documentElement.setAttribute('data-theme', theme);
+
+        })
+    })
+
+// close listener
+});
