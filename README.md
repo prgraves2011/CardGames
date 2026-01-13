@@ -1,1 +1,3 @@
-This repo is set for developing web-based game, particularly card games. Freecell is now fully developed, the next being Solitaire. Other games to be included in future. The 'main.js' now includes a DOM loader for 'main.htm'. This makes up version 2 of the original static Freecell game, now removed.
+This repo is set for developing web-based game, particularly card games. Freecell is now fully developed, the next being Solitaire. Other games to be included in future.
+
+Download the contents and run main.htm to try it out!
