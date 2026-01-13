@@ -118,36 +118,19 @@ function canMoveStack(stack) {
     return stack.length <= maxMoveableStckSize();
 }
 
-// create cards
-const suits = ['H', 'D', 'C', 'S'];
-const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+// deal freecell game
+function dealFreecell() {
 
-// identify columns
-const columns = [];
-for (let i = 0; i < 8; i++) {
-    columns.push(document.getElementById(`col-${i}`));
-}
+    // create cards
+    const suits = ['H', 'D', 'C', 'S'];
+    const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 
-// deal initial game
-dealNewGame();
-
-function initFreecell() {
-
-    // NOW get the columns (they exist now)
+    // identify columns
     const columns = [];
     for (let i = 0; i < 8; i++) {
         columns.push(document.getElementById(`col-${i}`));
     }
-    
-    // Store globally so dealNewGame can access it
-    window.freecellColumns = columns;
 
-    // deal the game
-    dealNewGame();
-}
-
-// deal new game
-function dealNewGame() {
     // clear containers
     [...document.querySelectorAll('.column, .freecell, .foundation')].forEach(container => {
         container.innerHTML = '';
@@ -321,5 +304,5 @@ document.addEventListener('mouseup', (e) => {
 
 // reset game button
 document.getElementById('reset-btn').addEventListener('click', () => {
-    dealNewGame();
+    dealFreecell();
 });

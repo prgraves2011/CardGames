@@ -24,6 +24,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: var(--bgColour);
+    overflow: hidden;
 }
 
 /* from 'freecell-board' */
@@ -71,6 +72,16 @@ body {
     border: 2px, solid, transparent;
     border-radius: 8px;
     cursor: pointer;
+}
+
+.menu-btn:hover,
+.theme-btn:hover {
+    transform: scale(1.05);
+}
+
+.menu-btn.active {
+    outline: 1px solid var(--bgColour);
+    outline-offset: 2px;
 }
 
 .theme-btn {

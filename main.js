@@ -1,37 +1,39 @@
 let currentGame = null;
 
 function loadGame(gameName) {
-    // update active button
-    document.querySelectorAll('.menu-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    document.getElementById(`btn-${gameName}`).classList.add('active');
 
-    // clear game container
-    const container = document.getElementById('game-container');
-    container.innerHTML = '';
+    //check chosen game is active ==> if so, do nothing, else, load new game
+    if (currentGame === gameName) {
+        return;
+    } else{
+        // assign active game
+        currentGame = gameName;
+        
+        // update active button
+        document.querySelectorAll('.menu-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.getElementById(`btn-${gameName}`).classList.add('active');
 
-    //load selected game
-    if (gameName === 'freecell') {
-        loadFreecell(container);
-        console.log("Loading Freecell");
-    } else if (gameName === 'solitaire') {
-        loadSolitaire(container);
-        console.log("Loading Solitaire");
+        // clear game container
+        const container = document.getElementById('game-container');
+        container.innerHTML = '';
+
+        //load selected game
+        if (gameName === 'freecell') {
+            loadFreecell(container);
+        } else if (gameName === 'solitaire') {
+            loadSolitaire(container);
+        }
     }
-
-    currentGame = gameName;
 }
-
-// load initial game - freecell
-loadGame('freecell');
 
 // reset current game
 function resetCurrentGame() {
     if (currentGame === 'freecell') {
-        dealNewGame();
+        dealFreecell();
     } else if (currentGame === 'solitaire') {
-        resetSolitaire();
+        dealSolitaire();
     }
 }
 
@@ -82,13 +84,14 @@ function loadFreecell(container) {
         tableau.appendChild(column);
     }
 
-    // init freecell after DOM is built
-    initFreecell();
+    // deal freecell after DOM is built
+    dealFreecell();
 }
 
 // SOLITAIRE loader
 function loadSolitaire(container) {
     // JS here
+    // initSolitaire();
 }
 
 // open listener - for theme switcher
