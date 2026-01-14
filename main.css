@@ -69,9 +69,13 @@ body {
     padding: 8px 16px;
     height: 40px;
     gap: 8px;
-    border: 2px, solid, transparent;
     border-radius: 8px;
     cursor: pointer;
+    border: none;
+}
+
+.menu-btn:focus {
+    outline: none;
 }
 
 .menu-btn:hover,
