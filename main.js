@@ -94,6 +94,27 @@ function loadSolitaire(container) {
     // initSolitaire();
 }
 
+// zoom control
+let zoomLevel = 1;
+
+function zoomIn() {
+    zoomLevel += 0.1;
+    if (zoomLevel > 1.5) zoomLevel = 1.5; // Max zoom
+    applyZoom();
+}
+
+function zoomOut() {
+    zoomLevel -= 0.1;
+    if (zoomLevel < 0.8) zoomLevel = 0.8; // Min zoom
+    applyZoom();
+}
+
+function applyZoom() {
+    const container = document.getElementById('game-container');
+    container.style.transform = `scale(${zoomLevel})`;
+    container.style.transformOrigin = 'top center';
+}
+
 // open listener - for theme switcher
 document.addEventListener('DOMContentLoaded', () => {
 
