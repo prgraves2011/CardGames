@@ -128,3 +128,11 @@ body {
 .theme-black {
     background-color: rgb(206, 206, 206);
 }
+
+#welcome {
+    font-family: 'Brush Script MT', cursive;
+    font-size:200px;
+    color: rgba(0, 0, 0, 0.5);
+    display: flex;    
+    justify-content: center;
+}
