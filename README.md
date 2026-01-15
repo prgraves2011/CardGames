@@ -4,9 +4,9 @@ Download the contents and run main.htm to try it out!
 
 UPCOMING CHANGES...
 
-Win detection
-Game selection screen
-Local storage
-Auto-save/reload
-Undo history
-Game stats
+Win detection, 
+Game selection screen, 
+Local storage, 
+Auto-save/reload, 
+Undo history, 
+Game stats.
