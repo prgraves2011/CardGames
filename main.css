@@ -28,6 +28,7 @@ body {
 }
 
 #game-container {
+    position: relative;
     padding: 16px;
     transition: transform 0.2s ease;
 }
@@ -130,9 +131,19 @@ body {
 }
 
 #welcome {
-    font-family: 'Brush Script MT', cursive;
-    font-size:200px;
-    color: rgba(0, 0, 0, 0.5);
-    display: flex;    
-    justify-content: center;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%,0%);
+    width: 700px;
+    height: 700px;
+    background-color: var(--bgColour);
+    overflow: hidden;
+}
+
+#welcome::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: center / contain no-repeat url("wallpaper.png");
+    mix-blend-mode: multiply;  /* dark inks stay dark; bg color tints whites */
+    opacity: 0.4;
 }

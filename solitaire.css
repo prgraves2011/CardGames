@@ -1,1 +1,53 @@
 
+.solitaire-board {
+    padding: 16px;
+}
+
+.top-row {
+    display: flex;
+    justify-content: center;
+    gap: 96px;
+    margin-bottom: 24px;
+}
+
+.foundations {
+    display: flex;
+    gap: 12px;
+}
+
+.foundation {
+    position: relative;
+    width: 100px;
+    height: 140px;
+    border-radius: 6px;
+    background-color: var(--deepColour);
+}
+
+.tableau {
+    display: grid;
+    grid-template-columns: repeat(8, 90px);
+    gap: 16px;
+    justify-content: center;
+}
+
+.column {
+    position: relative;
+    min-height: 500px;
+    width: 100px;
+}
+
+.card {
+    position: absolute;
+    left: 0;
+    width: 100px;
+    height: 140px;
+}
+
+.column .card {
+    top: calc(var(--stack-index) * 25px);
+}
+
+.foundation .card,
+.card {
+    top: 0;
+}
