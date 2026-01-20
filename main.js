@@ -90,8 +90,39 @@ function loadFreecell(container) {
 
 // SOLITAIRE loader
 function loadSolitaire(container) {
-    // JS here
-    // initSolitaire();
+    //  create top row
+    const topRow = document.createElement('div');
+    topRow.className = 'top-row';
+    container.appendChild(topRow);
+
+    // create foundation-set
+    const foundationSet = document.createElement ('div');
+    foundationSet.className = 'foundations';
+    topRow.appendChild(foundationSet);
+
+    // create FOUR foundations
+    for (let i = 0; i < 4; i++) {
+        const cell = document.createElement ('div');
+        cell.className = 'foundation';
+        cell.id = `foundation-${i}`;
+        foundationSet.appendChild(cell);
+    }
+
+    // create tableau
+    const tableau = document.createElement ('div');
+    tableau.className = 'tableau';
+    container.appendChild(tableau);
+
+    // create columns
+    for (let i = 0; i < 7; i++) {
+        const column = document.createElement ('div');
+        column.className = 'column';
+        column.id = `col-${i}`;
+        tableau.appendChild(column);
+    }
+
+    // deal solitare after DOM is built
+    dealSolitaire();
 }
 
 // zoom control
