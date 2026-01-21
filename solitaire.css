@@ -8,7 +8,6 @@
     justify-content: center;
     gap: 96px;
     margin-bottom: 24px;
-    background-color: yellowgreen;
 }
 
 .foundations {
@@ -16,8 +15,7 @@
     gap: 12px;
 }
 
-.foundation,
-.deck {
+.foundation {
     position: relative;
     width: 100px;
     height: 140px;
@@ -30,6 +28,7 @@
     gap: 12px;
 }
 
+.deck,
 .discard {
     position: relative;
     width: 96px;
@@ -40,18 +39,15 @@
 
 .solitaire-tableau {
     display: grid;
-    grid-template-columns: repeat(7, 140px);
-    gap: 6px;
+    grid-template-columns: repeat(7, 100px);
+    column-gap: 16px;
     justify-content: center;
-    background-color: azure;
-    border-color: 2px solid blue;
 }
 
 .column {
     position: relative;
     min-height: 500px;
-    width: 100px;
-    background-color: blanchedalmond;
+    width: 140px;
 }
 
 .card {

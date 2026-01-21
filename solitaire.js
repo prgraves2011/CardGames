@@ -35,4 +35,9 @@ function dealSolitaire() {
     // create cards
     const suits = ['H', 'D', 'C', 'S'];
     const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+
+    // identify deck foundation
+    deckFound = document.getElementsByClassName('deck');
+
+    // shuffle and place deck
 }
