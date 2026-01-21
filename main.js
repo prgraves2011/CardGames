@@ -95,6 +95,21 @@ function loadSolitaire(container) {
     topRow.className = 'top-row';
     container.appendChild(topRow);
 
+    // create deck/discard SET
+    const deckSet = document.createElement('div');
+    deckSet.className = 'deck-set';
+    topRow.appendChild(deckSet);
+
+    // create deck foundation
+    const deckFoundation = document.createElement('div');
+    deckFoundation.className = 'deck';
+    deckSet.appendChild(deckFoundation);
+
+    // create discard
+    const discardFoundation = document.createElement('div');
+    discardFoundation.className = 'discard';
+    deckSet.appendChild(discardFoundation);
+
     // create foundation-set
     const foundationSet = document.createElement ('div');
     foundationSet.className = 'foundations';
@@ -110,7 +125,7 @@ function loadSolitaire(container) {
 
     // create tableau
     const tableau = document.createElement ('div');
-    tableau.className = 'tableau';
+    tableau.className = 'solitaire-tableau';
     container.appendChild(tableau);
 
     // create columns

@@ -8,6 +8,7 @@
     justify-content: center;
     gap: 96px;
     margin-bottom: 24px;
+    background-color: yellowgreen;
 }
 
 .foundations {
@@ -15,7 +16,8 @@
     gap: 12px;
 }
 
-.foundation {
+.foundation,
+.deck {
     position: relative;
     width: 100px;
     height: 140px;
@@ -23,17 +25,33 @@
     background-color: var(--deepColour);
 }
 
-.tableau {
+.deck-set {
+    display: flex;
+    gap: 12px;
+}
+
+.discard {
+    position: relative;
+    width: 96px;
+    height: 136px;
+    border-radius: 6px;
+    border: 2px solid var(--deepColour);
+}
+
+.solitaire-tableau {
     display: grid;
-    grid-template-columns: repeat(8, 90px);
-    gap: 16px;
+    grid-template-columns: repeat(7, 140px);
+    gap: 6px;
     justify-content: center;
+    background-color: azure;
+    border-color: 2px solid blue;
 }
 
 .column {
     position: relative;
     min-height: 500px;
     width: 100px;
+    background-color: blanchedalmond;
 }
 
 .card {
