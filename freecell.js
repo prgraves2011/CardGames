@@ -81,9 +81,6 @@ function canPlaceOnFoundation (cardEl, foundationEl) {
     const { rank, suit} = parseCard(cardEl);
     const cards = [...foundationEl.children].filter(el => el.classList.contains('card'));
 
-    // TEMP - LOG CHECK
-    console.log('Foundation check:', parseCard(cardEl), foundationEl.children.length);
-
     // empty foundation - ACE only
     if (cards.length === 0) {
         return rank === 'A';
@@ -165,6 +162,9 @@ function dealFreecell() {
         card.style.setProperty('--stack-index', stackIndex);
         columns[columnIndex].appendChild(card);
     }
+
+    // report finished deal
+    console.log('Freecell now dealt');
 }
 
 // calculate stack positions
@@ -179,7 +179,7 @@ function updateStackIndices(container) {
 document.addEventListener('dragstart', e => e.preventDefault());
 
 // drag state variables
-let draggedStack = null;
+let draggedStack = [];
 let dragOffsetX = 0;
 let dragOffsetY = 0;
 let sourceContainer = null;
@@ -200,16 +200,16 @@ document.addEventListener('mousedown', (e) => {
     dragOffsetX = e.clientX - rect.left;
     dragOffsetY = e.clientY - rect.top;
 
-draggedStack.forEach((c,i) => {
-    const r = c.getBoundingClientRect();
+    draggedStack.forEach((c,i) => {
+        const r = c.getBoundingClientRect();
 
-        c.style.left = `${r.left}px`;
-        c.style.top  = `${r.top}px`;
-        c.style.zIndex = 1000 + i;
-        c.style.pointerEvents = 'none';
+            c.style.left = `${r.left}px`;
+            c.style.top  = `${r.top}px`;
+            c.style.zIndex = 1000 + i;
+            c.style.pointerEvents = 'none';
 
-        document.body.appendChild(c);
-    });
+            document.body.appendChild(c);
+        });
 });
 
 // mouse move
@@ -236,13 +236,24 @@ document.addEventListener('mouseup', (e) => {
 
     const leadCard = draggedStack[0];
 
-    // ── Freecell rule ─────────────────────────────
+    // ── Freecell must be empty ─────────────────────────────
     if (
         dropTarget &&
         dropTarget.classList.contains('freecell') &&
         !isFreeCellEmpty(dropTarget)
     ) {
         target = sourceContainer;
+        console.log('Freecell not empty');
+    }
+
+    // Freecell only accepts one card
+    if (
+        dropTarget &&
+        dropTarget.classList.contains('freecell') &&
+        draggedStack.length !== 1
+    ) {
+        target = sourceContainer;
+        console.log('No more than one card in a freecell');
     }
 
     // ── Foundation rule (single card only) ─────────
@@ -255,6 +266,7 @@ document.addEventListener('mouseup', (e) => {
         )
     ) {
         target = sourceContainer;
+        console.log('No more than one card to a foundation at a time');
     }
 
     // ── Column rule (stack-aware) ──────────────────
@@ -264,6 +276,7 @@ document.addEventListener('mouseup', (e) => {
         !canPlaceStackOnColumn(draggedStack, dropTarget)
     ) {
         target = sourceContainer;
+        console.log('Invalid stack');
     }
 
     // Max moveable stack rule
@@ -273,10 +286,17 @@ document.addEventListener('mouseup', (e) => {
         !canMoveStack(draggedStack)
     ) {
         target = sourceContainer;
+        console.log('Stack too large');
     }
 
     // ── Commit move (atomic stack append) ──────────
-    draggedStack.forEach(card => target.appendChild(card));
+    draggedStack.forEach(card => {
+        target.appendChild(card);
+        if (target !== sourceContainer) {
+            console.log(`Moved: ${parseCard(card).rank}${parseCard(card).suit}`
+            );       
+        }
+    });
 
     // ── Cleanup dragged styles ─────────────────────
     draggedStack.forEach(card => {
@@ -300,9 +320,4 @@ document.addEventListener('mouseup', (e) => {
     // ── Reset drag state ───────────────────────────
     draggedStack = [];
     sourceContainer = null;
-});
-
-// reset game button
-document.getElementById('reset-btn').addEventListener('click', () => {
-    dealFreecell();
 });

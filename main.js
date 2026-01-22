@@ -4,8 +4,11 @@ function loadGame(gameName) {
 
     //check chosen game is active ==> if so, do nothing, else, load new game
     if (currentGame === gameName) {
+        console.log('Selected game is currently loaded.');
         return;
+        
     } else{
+
         // assign active game
         currentGame = gameName;
         
@@ -19,10 +22,15 @@ function loadGame(gameName) {
         const container = document.getElementById('game-container');
         container.innerHTML = '';
 
+        //report game selection
+        console.log(`${gameName} selected`);        
+
         //load selected game
         if (gameName === 'freecell') {
+            console.log('Loading Freecell...');
             loadFreecell(container);
         } else if (gameName === 'solitaire') {
+            console.log('Loading Solitaire...');
             loadSolitaire(container);
         }
     }
@@ -32,8 +40,10 @@ function loadGame(gameName) {
 function resetCurrentGame() {
     if (currentGame === 'freecell') {
         dealFreecell();
+        console.log('Freecell reset');
     } else if (currentGame === 'solitaire') {
         dealSolitaire();
+        console.log('Solitaire reset');
     }
 }
 
@@ -90,6 +100,7 @@ function loadFreecell(container) {
 
 // SOLITAIRE loader
 function loadSolitaire(container) {
+
     //  create top row
     const topRow = document.createElement('div');
     topRow.className = 'top-row';
