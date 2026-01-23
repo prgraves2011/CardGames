@@ -65,3 +65,12 @@
 .card {
     top: 0;
 }
+
+.card[data-state="down"] {
+    cursor: default; /* Can't drag face-down cards */
+    pointer-events: none; /* Disable interaction */
+}
+
+.card[data-state="up"] {
+    cursor: grab;
+}
