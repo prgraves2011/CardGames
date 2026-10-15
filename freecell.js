@@ -1,38 +1,3 @@
-
-// card rank values
-const rank_val = {
-    A: 1,
-    '2': 2,
-    '3': 3,
-    '4': 4,
-    '5': 5,
-    '6': 6,
-    '7': 7,
-    '8': 8,
-    '9': 9,
-    '10': 10,
-    J: 11,
-    Q: 12,
-    K: 13,
-};
-
-// suit colours
-const suitColor = {
-    C: 'B',
-    S: 'B',
-    D: 'R',
-    H: 'R',
-};
-
-// extract moving stack from column
-function getMovingStack(cardEl) {
-    const container = cardEl.parentElement;
-    const cards = [...container.querySelectorAll('.card')];
-    const index = cards.indexOf(cardEl);
-    return cards.slice(index);
-}
-
-// validate stack integrity
 function isValidStack(stack) {
     for (let i = 0; i < stack.length - 1; i++) {
         const a = parseCard(stack[i]);
@@ -48,7 +13,6 @@ function isValidStack(stack) {
     return true;
 }
 
-// column acceptance - stack aware
 function canPlaceStackOnColumn(stack, columnEl) {
     // Rule 1: the moving stack itself must be valid
     if (!isValidStack(stack)) return false;
@@ -68,15 +32,6 @@ function canPlaceStackOnColumn(stack, columnEl) {
     );
 }
 
-// card identity parsing
-function parseCard(cardEl) {
-    const id = cardEl.alt; // e.g.: '10H'
-    const suit = id.slice(-1);
-    const rank = id.slice(0, -1);
-    return { rank, suit };
-}
-
-// foundation acceptance check
 function canPlaceOnFoundation (cardEl, foundationEl) {
     const { rank, suit} = parseCard(cardEl);
     const cards = [...foundationEl.children].filter(el => el.classList.contains('card'));
@@ -95,57 +50,99 @@ function canPlaceOnFoundation (cardEl, foundationEl) {
     );
 }
 
+function isFreeCellEmpty(cell) {
+    return cell.querySelectorAll('.card').length === 0;
+}
+
+function cleanupDrag(){
+    draggedStack.forEach(card => {
+        card.style.left = '';
+        card.style.top = '';
+        card.style.zIndex = '';
+        card.style.pointerEvents = '';
+    });
+
+    draggedStack = [];
+    sourceContainer = null;    
+}
+
 // helper functions for 'max-move-stack' rule
 function countEmptyFreeCells () {
     return document.querySelectorAll('.freecell:empty').length;
 }
-
 function countEmptyFreeColumns () {
     return document.querySelectorAll('.column:empty').length;
 }
-
 function maxMoveableStckSize() {
     const freeCells = countEmptyFreeCells();
     const emptyCols = countEmptyFreeColumns();
     return (freeCells +1) * Math.pow(2, emptyCols);
 }
-
-// ...validation function
 function canMoveStack(stack) {
     return stack.length <= maxMoveableStckSize();
 }
 
-// deal freecell game
+// FREECELL loader
+function loadFreecell(container) {
+
+    //  create top row
+    const topRow = document.createElement('div');
+    topRow.className = 'top-row';
+    container.appendChild(topRow);
+
+    // create freecell-set
+    const freecellSet = document.createElement ('div');
+    freecellSet.className = 'freecells';
+    topRow.appendChild(freecellSet);
+
+    // create foundation-set
+    const foundationSet = document.createElement ('div');
+    foundationSet.className = 'foundations';
+    topRow.appendChild(foundationSet);
+
+    // create FOUR freecells
+    for (let i = 0; i < 4; i++) {
+        const cell = document.createElement ('div');
+        cell.className = 'freecell';
+        cell.id = `freecell-${i}`;
+        freecellSet.appendChild(cell);
+    }
+
+    // create FOUR foundations
+    for (let i = 0; i < 4; i++) {
+        const cell = document.createElement ('div');
+        cell.className = 'foundation';
+        cell.id = `foundation-${i}`;
+        foundationSet.appendChild(cell);
+    }
+
+    // create tableau
+    const tableau = document.createElement ('div');
+    tableau.className = 'tableau';
+    container.appendChild(tableau);
+
+    // create columns
+    for (let i = 0; i < 8; i++) {
+        const column = document.createElement ('div');
+        column.className = 'column';
+        column.id = `col-${i}`;
+        tableau.appendChild(column);
+    }
+
+    // deal freecell after DOM is built
+    dealFreecell();
+}
 function dealFreecell() {
 
-    // create cards
-    const suits = ['H', 'D', 'C', 'S'];
-    const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+    // prepare board and deck
+    clearContainers('.column, .freecell, .foundation');
+    const deck = createDeck();
+    shuffleDeck(deck);
 
     // identify columns
     const columns = [];
     for (let i = 0; i < 8; i++) {
         columns.push(document.getElementById(`col-${i}`));
-    }
-
-    // clear containers
-    [...document.querySelectorAll('.column, .freecell, .foundation')].forEach(container => {
-        container.innerHTML = '';
-    });
-
-    // build a deck
-    const deck = [];
-    for (const suit of suits) {
-        for (const rank of ranks) {
-            //create a suit-rank pair and append to deck
-            deck.push(`${rank}${suit}`);
-        }
-    }
-
-    // shuffle the deck (Fisher-Yates)
-    for ( let i = deck.length -1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [deck[i], deck[j]] = [deck[j], deck[i]];
     }
 
     // deal cards
@@ -167,14 +164,6 @@ function dealFreecell() {
     console.log('Freecell now dealt');
 }
 
-// calculate stack positions
-function updateStackIndices(container) {
-    const cards = [...container.querySelectorAll('.card')];
-    cards.forEach((card, index) => {
-        card.style.setProperty('--stack-index', index);
-    });
-}
-
 // prevent drag native behaviour
 document.addEventListener('dragstart', e => e.preventDefault());
 
@@ -184,8 +173,9 @@ let dragOffsetX = 0;
 let dragOffsetY = 0;
 let sourceContainer = null;
 
-// mouse down events
-document.addEventListener('mousedown', (e) => {
+// pointer-down
+document.addEventListener('pointerdown',startDrag);
+function startDrag(e) {
 
     const card = e.target.closest('.card');
     if (!card) return;
@@ -193,13 +183,21 @@ document.addEventListener('mousedown', (e) => {
     // prevent drags from foundations
     if (card.closest('.foundation')) return;
 
-    sourceContainer = card.parentElement;
-    draggedStack = getMovingStack(card);
+    // prevent invalid stacks moving
+    const stack = getMovingStack(card);
+    if(!isValidStack(stack)) return;
+    
+    sourceContainer = card.parentElement;    
+    draggedStack = stack;
 
     const rect = card.getBoundingClientRect();
     dragOffsetX = e.clientX - rect.left;
     dragOffsetY = e.clientY - rect.top;
 
+    prepareDraggedCards(draggedStack);
+};
+
+function prepareDraggedCards(stack){
     draggedStack.forEach((c,i) => {
         const r = c.getBoundingClientRect();
 
@@ -209,40 +207,58 @@ document.addEventListener('mousedown', (e) => {
             c.style.pointerEvents = 'none';
 
             document.body.appendChild(c);
-        });
-});
-
-// mouse move
-document.addEventListener('mousemove', (e) => {
-    if (draggedStack.length === 0) return;
-
-    draggedStack.forEach((card, i) => {
-        card.style.left = `${e.clientX - dragOffsetX}px`;
-        card.style.top  = `${e.clientY - dragOffsetY + i * 25}px`;
-    });
-});
-
-// freecell occupancy check
-function isFreeCellEmpty(cell) {
-    return cell.querySelectorAll('.card').length === 0;
+        });    
 }
 
-// drop card - mouse up
-document.addEventListener('mouseup', (e) => {
+// pointer-move
+const dragSpacing = 25;
+document.addEventListener('pointermove',dragStack);
+function dragStack(e){
+    // no stack selected
+    if (draggedStack.length === 0) return;
+
+    // move the cards
+    draggedStack.forEach((card, i) => {
+        card.style.left = `${e.clientX - dragOffsetX}px`;
+        card.style.top  = `${e.clientY - dragOffsetY + i * dragSpacing}px`;
+    });
+}
+
+// pointer-up
+document.addEventListener('pointerup',dropStack);
+function dropStack(e){
     if (draggedStack.length === 0) return;
 
     const dropTarget = e.target.closest('.foundation, .freecell, .column');
+    const leadCard = draggedStack[0];
+    const target = validateMove(dropTarget,leadCard);
+
+    // Commit move (atomic stack append)
+    moveStack(target);
+
+    //Recalculate visual stacks
+    updateStackIndices(target);
+    if (target !== sourceContainer) {
+        updateStackIndices(sourceContainer);
+    }
+
+    // Freecell stack index reset
+    if (target.classList.contains('freecell')) {
+        draggedStack[0].style.setProperty('--stack-index', 0);
+    }
+
+    cleanupDrag();
+}
+function validateMove(dropTarget,leadCard){
     let target = dropTarget || sourceContainer;
 
-    const leadCard = draggedStack[0];
-
-    // ── Freecell must be empty ─────────────────────────────
+    // Freecell must be empty
     if (
         dropTarget &&
         dropTarget.classList.contains('freecell') &&
         !isFreeCellEmpty(dropTarget)
     ) {
-        target = sourceContainer;
+        return sourceContainer;
         console.log('Freecell not empty');
     }
 
@@ -252,11 +268,11 @@ document.addEventListener('mouseup', (e) => {
         dropTarget.classList.contains('freecell') &&
         draggedStack.length !== 1
     ) {
-        target = sourceContainer;
+        return sourceContainer;
         console.log('No more than one card in a freecell');
     }
 
-    // ── Foundation rule (single card only) ─────────
+    // Foundation rule (single card only)
     if (
         dropTarget &&
         dropTarget.classList.contains('foundation') &&
@@ -265,17 +281,17 @@ document.addEventListener('mouseup', (e) => {
             !canPlaceOnFoundation(leadCard, dropTarget)
         )
     ) {
-        target = sourceContainer;
+        return sourceContainer;
         console.log('No more than one card to a foundation at a time');
     }
 
-    // ── Column rule (stack-aware) ──────────────────
+    // Column rule (stack-aware)
     if (
         dropTarget &&
         dropTarget.classList.contains('column') &&
         !canPlaceStackOnColumn(draggedStack, dropTarget)
     ) {
-        target = sourceContainer;
+        return sourceContainer;
         console.log('Invalid stack');
     }
 
@@ -285,39 +301,19 @@ document.addEventListener('mouseup', (e) => {
         dropTarget.classList.contains('column') &&
         !canMoveStack(draggedStack)
     ) {
-        target = sourceContainer;
+        return sourceContainer;
         console.log('Stack too large');
     }
 
-    // ── Commit move (atomic stack append) ──────────
+    // Valid target
+    return target;
+}
+function moveStack(target){
     draggedStack.forEach(card => {
         target.appendChild(card);
         if (target !== sourceContainer) {
             console.log(`Moved: ${parseCard(card).rank}${parseCard(card).suit}`
             );       
         }
-    });
-
-    // ── Cleanup dragged styles ─────────────────────
-    draggedStack.forEach(card => {
-        card.style.left = '';
-        card.style.top = '';
-        card.style.zIndex = '';
-        card.style.pointerEvents = '';
-    });
-
-    // ── Recalculate visual stacks ──────────────────
-    updateStackIndices(target);
-    if (target !== sourceContainer) {
-        updateStackIndices(sourceContainer);
-    }
-
-    // ── Freecell stack index reset ─────────────────
-    if (target.classList.contains('freecell')) {
-        draggedStack[0].style.setProperty('--stack-index', 0);
-    }
-
-    // ── Reset drag state ───────────────────────────
-    draggedStack = [];
-    sourceContainer = null;
-});
+    });        
+}

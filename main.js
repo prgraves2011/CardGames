@@ -47,152 +47,54 @@ function resetCurrentGame() {
     }
 }
 
-// FREECELL loader
-function loadFreecell(container) {
-
-    //  create top row
-    const topRow = document.createElement('div');
-    topRow.className = 'top-row';
-    container.appendChild(topRow);
-
-    // create freecell-set
-    const freecellSet = document.createElement ('div');
-    freecellSet.className = 'freecells';
-    topRow.appendChild(freecellSet);
-
-    // create foundation-set
-    const foundationSet = document.createElement ('div');
-    foundationSet.className = 'foundations';
-    topRow.appendChild(foundationSet);
-
-    // create FOUR freecells
-    for (let i = 0; i < 4; i++) {
-        const cell = document.createElement ('div');
-        cell.className = 'freecell';
-        cell.id = `freecell-${i}`;
-        freecellSet.appendChild(cell);
-    }
-
-    // create FOUR foundations
-    for (let i = 0; i < 4; i++) {
-        const cell = document.createElement ('div');
-        cell.className = 'foundation';
-        cell.id = `foundation-${i}`;
-        foundationSet.appendChild(cell);
-    }
-
-    // create tableau
-    const tableau = document.createElement ('div');
-    tableau.className = 'tableau';
-    container.appendChild(tableau);
-
-    // create columns
-    for (let i = 0; i < 8; i++) {
-        const column = document.createElement ('div');
-        column.className = 'column';
-        column.id = `col-${i}`;
-        tableau.appendChild(column);
-    }
-
-    // deal freecell after DOM is built
-    dealFreecell();
-}
-
-// SOLITAIRE loader
-function loadSolitaire(container) {
-
-    //  create top row
-    const topRow = document.createElement('div');
-    topRow.className = 'top-row';
-    container.appendChild(topRow);
-
-    // create deck/discard SET
-    const deckSet = document.createElement('div');
-    deckSet.className = 'deck-set';
-    topRow.appendChild(deckSet);
-
-    // create deck foundation
-    const deckFoundation = document.createElement('div');
-    deckFoundation.className = 'deck';
-    deckSet.appendChild(deckFoundation);
-
-    // create discard
-    const discardFoundation = document.createElement('div');
-    discardFoundation.className = 'discard';
-    deckSet.appendChild(discardFoundation);
-
-    // create foundation-set
-    const foundationSet = document.createElement ('div');
-    foundationSet.className = 'foundations';
-    topRow.appendChild(foundationSet);
-
-    // create FOUR foundations
-    for (let i = 0; i < 4; i++) {
-        const cell = document.createElement ('div');
-        cell.className = 'foundation';
-        cell.id = `foundation-${i}`;
-        foundationSet.appendChild(cell);
-    }
-
-    // create tableau
-    const tableau = document.createElement ('div');
-    tableau.className = 'solitaire-tableau';
-    container.appendChild(tableau);
-
-    // create columns
-    for (let i = 0; i < 7; i++) {
-        const column = document.createElement ('div');
-        column.className = 'column';
-        column.id = `col-${i}`;
-        tableau.appendChild(column);
-    }
-
-    // deal solitare after DOM is built
-    dealSolitaire();
-}
-
 // zoom control
 let zoomLevel = 1;
-
 function zoomIn() {
     zoomLevel += 0.1;
     if (zoomLevel > 1.5) zoomLevel = 1.5; // Max zoom
     applyZoom();
 }
-
 function zoomOut() {
     zoomLevel -= 0.1;
     if (zoomLevel < 0.8) zoomLevel = 0.8; // Min zoom
     applyZoom();
 }
-
 function applyZoom() {
     const container = document.getElementById('game-container');
     container.style.transform = `scale(${zoomLevel})`;
     container.style.transformOrigin = 'top center';
 }
 
-// open listener - for theme switcher
-document.addEventListener('DOMContentLoaded', () => {
+// theme switcher
+document.addEventListener(
+    'DOMContentLoaded',
+    initialiseThemeSwitcher
+);
+function initialiseThemeSwitcher(){
 
-    // theme switching
-    const themeButtons = document.querySelectorAll('.theme-btn');
+    const themeButtons =
+        document.querySelectorAll('.theme-btn');
+    
+    themeButtons.forEach(button => {
 
-    themeButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
+        button.addEventListener(
+            'click',
+            handleThemeClick
+        );
 
-            // remove active class from all buttons
-            themeButtons.forEach(b => b.classList.remove('active'));
-
-            // add active class to clicked button
-            btn.classList.add('active');
-
-            // apply theme to root element
-            const theme = btn.dataset.theme;
-            document.documentElement.setAttribute('data-theme', theme);
-
-        })
     })
-
-// close listener
-});
+}
+function handleThemeClick(e){
+    const button = e.currentTarget;
+    setActiveThemeButton(button);
+    applyTheme(button.dataset.theme);
+}
+function setActiveThemeButton(activeButton){
+    document.querySelectorAll('.theme-btn').forEach(button => {
+        button.classList.remove('active');
+    })
+    activeButton.classList.add('active');
+}
+function applyTheme(themeName){
+    document.documentElement.setAttribute('data-theme',themeName);
+}
