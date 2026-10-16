@@ -1,4 +1,5 @@
-// card rank values
+// CARD UTILITIES
+
 const rank_val = {
     A: 1,
     '2': 2,
@@ -15,7 +16,6 @@ const rank_val = {
     K: 13,
 };
 
-// suit colours
 const suitColor = {
     C: 'B',
     S: 'B',
@@ -23,7 +23,6 @@ const suitColor = {
     H: 'R',
 };
 
-// card identity parsing
 function parseCard(cardEl) {
     const id = cardEl.alt; // e.g.: '10H'
     const suit = id.slice(-1);
@@ -31,13 +30,8 @@ function parseCard(cardEl) {
     return { rank, suit };
 }
 
-// calculate stack positions
-function updateStackIndices(container) {
-    const cards = [...container.querySelectorAll('.card')];
-    cards.forEach((card, index) => {
-        card.style.setProperty('--stack-index', index);
-    });
-}
+
+// DECK UTILITIES
 
 function createDeck(){
     // create cards
@@ -76,18 +70,35 @@ function getMovingStack(cardEl) {
     return cards.slice(index);
 }
 
-function animate(){
 
+// VISUAL UTILITIES
+
+function updateStackIndices(container) {
+    const cards = [...container.querySelectorAll('.card')];
+    cards.forEach((card, index) => {
+        card.style.setProperty('--stack-index', index);
+    });
 }
 
-function startDrag(){
+function animateMove(card,target){
+    const first = card.getBoundingClientRect();
+    target.appendChild(card);
 
-}
+    card.style.left = '';
+    card.style.top = '';
+    const last = card.getBoundingClientRect();
 
-function drag(){
+    const dx = first.left - last.left;
+    const dy = first.top - last.top;
+    card.style.transition = 'none';
+    card.style.transform = `translate(${dx}px,${dy}px)`;
 
-}
+    requestAnimationFrame( () => {
+        card.style.transition = `transform 150ms ease-out`;
+        card.style.transform = '';
+    });
 
-function drop(){
-
+    card.addEventListener('transitionend',() => {
+        card.style.transition = '';
+    }, {once:true});
 }

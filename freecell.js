@@ -56,8 +56,6 @@ function isFreeCellEmpty(cell) {
 
 function cleanupDrag(){
     draggedStack.forEach(card => {
-        card.style.left = '';
-        card.style.top = '';
         card.style.zIndex = '';
         card.style.pointerEvents = '';
     });
@@ -198,7 +196,7 @@ function startDrag(e) {
 };
 
 function prepareDraggedCards(stack){
-    draggedStack.forEach((c,i) => {
+    stack.forEach((c,i) => {
         const r = c.getBoundingClientRect();
 
             c.style.left = `${r.left}px`;
@@ -310,7 +308,8 @@ function validateMove(dropTarget,leadCard){
 }
 function moveStack(target){
     draggedStack.forEach(card => {
-        target.appendChild(card);
+        // target.appendChild(card);
+        animateMove(card,target);
         if (target !== sourceContainer) {
             console.log(`Moved: ${parseCard(card).rank}${parseCard(card).suit}`
             );       
