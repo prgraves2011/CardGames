@@ -54,16 +54,6 @@ function isFreeCellEmpty(cell) {
     return cell.querySelectorAll('.card').length === 0;
 }
 
-function cleanupDrag(){
-    draggedStack.forEach(card => {
-        card.style.zIndex = '';
-        card.style.pointerEvents = '';
-    });
-
-    draggedStack = [];
-    sourceContainer = null;    
-}
-
 // helper functions for 'max-move-stack' rule
 function countEmptyFreeCells () {
     return document.querySelectorAll('.freecell:empty').length;
@@ -198,12 +188,11 @@ function startDrag(e) {
 function prepareDraggedCards(stack){
     stack.forEach((c,i) => {
         const r = c.getBoundingClientRect();
-
             c.style.left = `${r.left}px`;
             c.style.top  = `${r.top}px`;
             c.style.zIndex = 1000 + i;
+            console.log(`${c.alt} index: ${c.style.zIndex}`);
             c.style.pointerEvents = 'none';
-
             document.body.appendChild(c);
         });    
 }
@@ -231,14 +220,9 @@ function dropStack(e){
     const leadCard = draggedStack[0];
     const target = validateMove(dropTarget,leadCard);
 
-    // Commit move (atomic stack append)
+    // Commit move
     moveStack(target);
-
-    //Recalculate visual stacks
-    updateStackIndices(target);
-    if (target !== sourceContainer) {
-        updateStackIndices(sourceContainer);
-    }
+    updateStackIndices(target);    
 
     // Freecell stack index reset
     if (target.classList.contains('freecell')) {
@@ -256,8 +240,8 @@ function validateMove(dropTarget,leadCard){
         dropTarget.classList.contains('freecell') &&
         !isFreeCellEmpty(dropTarget)
     ) {
-        return sourceContainer;
         console.log('Freecell not empty');
+        return sourceContainer;
     }
 
     // Freecell only accepts one card
@@ -266,8 +250,8 @@ function validateMove(dropTarget,leadCard){
         dropTarget.classList.contains('freecell') &&
         draggedStack.length !== 1
     ) {
-        return sourceContainer;
         console.log('No more than one card in a freecell');
+        return sourceContainer;
     }
 
     // Foundation rule (single card only)
@@ -279,8 +263,8 @@ function validateMove(dropTarget,leadCard){
             !canPlaceOnFoundation(leadCard, dropTarget)
         )
     ) {
-        return sourceContainer;
         console.log('No more than one card to a foundation at a time');
+        return sourceContainer;
     }
 
     // Column rule (stack-aware)
@@ -290,7 +274,6 @@ function validateMove(dropTarget,leadCard){
         !canPlaceStackOnColumn(draggedStack, dropTarget)
     ) {
         return sourceContainer;
-        console.log('Invalid stack');
     }
 
     // Max moveable stack rule
@@ -299,8 +282,8 @@ function validateMove(dropTarget,leadCard){
         dropTarget.classList.contains('column') &&
         !canMoveStack(draggedStack)
     ) {
-        return sourceContainer;
         console.log('Stack too large');
+        return sourceContainer;
     }
 
     // Valid target
@@ -308,11 +291,13 @@ function validateMove(dropTarget,leadCard){
 }
 function moveStack(target){
     draggedStack.forEach(card => {
-        // target.appendChild(card);
         animateMove(card,target);
-        if (target !== sourceContainer) {
-            console.log(`Moved: ${parseCard(card).rank}${parseCard(card).suit}`
-            );       
-        }
     });        
+}
+function cleanupDrag(){
+    draggedStack.forEach(card => {
+        card.style.pointerEvents = '';
+    });
+    draggedStack = [];
+    sourceContainer = null;    
 }

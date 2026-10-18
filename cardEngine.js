@@ -100,5 +100,6 @@ function animateMove(card,target){
 
     card.addEventListener('transitionend',() => {
         card.style.transition = '';
+        card.style.zIndex = '';
     }, {once:true});
 }
