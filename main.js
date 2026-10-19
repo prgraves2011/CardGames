@@ -60,9 +60,7 @@ function zoomOut() {
     applyZoom();
 }
 function applyZoom() {
-    const container = document.getElementById('game-container');
-    container.style.transform = `scale(${zoomLevel})`;
-    container.style.transformOrigin = 'top center';
+    document.documentElement.style.setProperty('--zoom', zoomLevel);
 }
 
 // theme switcher
@@ -73,15 +71,9 @@ document.addEventListener(
 function initialiseThemeSwitcher(){
 
     const themeButtons =
-        document.querySelectorAll('.theme-btn');
-    
+    document.querySelectorAll('.theme-btn');
     themeButtons.forEach(button => {
-
-        button.addEventListener(
-            'click',
-            handleThemeClick
-        );
-
+        button.addEventListener('click',handleThemeClick);
     })
 }
 function handleThemeClick(e){

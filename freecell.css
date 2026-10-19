@@ -20,34 +20,36 @@
 .freecell,
 .foundation {
     position: relative;
-    width: 100px;
-    height: 140px;
+    width: var(--card-w);
+    height: var(--card-h);
     border-radius: 6px;
     background-color: var(--deepColour);
 }
 
 .tableau {
     display: grid;
-    grid-template-columns: repeat(8, 100px);
-    gap: 16px;
+    grid-template-columns: repeat(8, var(--card-w));
+    gap: calc(16px * var(--zoom));
     justify-content: center;
 }
 
 .column {
     position: relative;
     min-height: 500px;
-    width: 100px;
+    width: var(--card-w);
 }
 
 .card {
     position: absolute;
-    left: 0;
-    width: 100px;
-    height: 140px;
+    width: var(--card-w);
+    height: var(--card-h);
 }
 
 .column .card {
-    top: calc(var(--stack-index) * 25px);
+    top: calc(var(--stack-index) * var(--fan));
+    left:0;
+    right:0;
+    margin:0 auto;
 }
 
 .foundation .card,

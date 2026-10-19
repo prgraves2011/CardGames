@@ -182,7 +182,10 @@ function startDrag(e) {
     dragOffsetX = e.clientX - rect.left;
     dragOffsetY = e.clientY - rect.top;
 
-    prepareDraggedCards(draggedStack);
+    // prepareDraggedCards(draggedStack); // REPLACED
+    dragStartX = e.clientX;
+    dragstartY = e.clientY;
+    dragStarted = false;
 };
 
 function prepareDraggedCards(stack){
@@ -200,9 +203,23 @@ function prepareDraggedCards(stack){
 // pointer-move
 const dragSpacing = 25;
 document.addEventListener('pointermove',dragStack);
+
+const dragThreshold = 4;
+let dragStartX = 0;
+let dragStartY = 0;
+let dragStarted = false;
+
 function dragStack(e){
     // no stack selected
     if (draggedStack.length === 0) return;
+
+    // lift cards once pointer has moved far enough
+    if(!dragStarted) {
+        const moved = Math.hypot(e.clientX - dragStartX, e.clientY - dragStartY);
+        if(moved < dragThreshold) return;
+        dragStarted = true;
+        prepareDraggedCards(draggedStack);
+    }
 
     // move the cards
     draggedStack.forEach((card, i) => {
@@ -215,6 +232,13 @@ function dragStack(e){
 document.addEventListener('pointerup',dropStack);
 function dropStack(e){
     if (draggedStack.length === 0) return;
+
+    // pressed and released without moving
+    if(!dragStarted) {
+        draggedStack = [];
+        sourceContainer = null;
+        return;
+    }
 
     const dropTarget = e.target.closest('.foundation, .freecell, .column');
     const leadCard = draggedStack[0];
@@ -300,4 +324,16 @@ function cleanupDrag(){
     });
     draggedStack = [];
     sourceContainer = null;    
+}
+
+// Double-click events
+document.addEventListener('dbclick', e => {
+    const card = e.target.closest('.card');
+    if(!card) return;
+    autoMove(card);
+});
+
+function autoMove(card) {
+    console.log(`Card ${card.alt} has been double-clicked`);
+    console.log('DOUBLE-CLICK!');
 }

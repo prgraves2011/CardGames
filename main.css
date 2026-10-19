@@ -1,4 +1,31 @@
 /* colour themes */
+@property --deepColour {
+    syntax: '<color>';
+    inherits:true;
+    initial-value: rgb(25, 42, 86);
+}
+@property --bgColour {
+    syntax: '<color>';
+    inherits:true;
+    initial-value: lightblue;
+}
+@property --zoom {
+    syntax: '<number>';
+    inherits:true;
+    initial-value:1;
+}
+:root {
+    --zoom:1;
+    transition: --zoom 0.2s ease, --deepColour 06 ease, --bgColour 0.6s ease;
+
+    --card-w: calc(100px*var(--zoom));
+    --card-h: calc(140px*var(--zoom));
+    --fan: calc(25px*var(--zoom));
+    --gap: calc(16px*var(--zoom));
+}
+:root {
+    transition: --deepColour 0.6s, --bgColour 0.6s ease;
+}
 :root {
     --deepColour: rgb(25, 42, 86);
     --bgColour: lightblue;
