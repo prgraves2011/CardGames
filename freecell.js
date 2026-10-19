@@ -327,7 +327,7 @@ function cleanupDrag(){
 }
 
 // Double-click events
-document.addEventListener('dbclick', e => {
+document.addEventListener('dblclick', e => {
     const card = e.target.closest('.card');
     if(!card) return;
     autoMove(card);
@@ -335,5 +335,20 @@ document.addEventListener('dbclick', e => {
 
 function autoMove(card) {
     console.log(`Card ${card.alt} has been double-clicked`);
-    console.log('DOUBLE-CLICK!');
+
+    // Check freecells
+    const freecell = findEmptyFreecell();
+    if(freecell){console.log('Frecell found!');}
+
+    // Check valid foundation
+    const foundation = findValidFoundation(card);
+}
+
+// Double-click helpers
+function findEmptyFreecell() {
+    const freecells = document.querySelectorAll('.freecell');
+    return [...freecells].find(cell => isFreeCellEmpty(cell));
+}
+function findValidFoundation(card){
+
 }
