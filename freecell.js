@@ -336,12 +336,21 @@ document.addEventListener('dblclick', e => {
 function autoMove(card) {
     console.log(`Card ${card.alt} has been double-clicked`);
 
-    // Check freecells
-    const freecell = findEmptyFreecell();
-    if(freecell){console.log('Frecell found!');}
-
     // Check valid foundation
     const foundation = findValidFoundation(card);
+    if (foundation){
+    console.log('Foundation found!');
+        animateMove(card,foundation);
+        return;
+    }
+
+    // Check freecells
+    const freecell = findEmptyFreecell();
+    if(freecell){
+        console.log('Freecell found!');
+        animateMove(card,freecell);
+        return;
+    }
 }
 
 // Double-click helpers
@@ -350,5 +359,6 @@ function findEmptyFreecell() {
     return [...freecells].find(cell => isFreeCellEmpty(cell));
 }
 function findValidFoundation(card){
-
+    const foundations = document.querySelectorAll('.foundation');
+    return [...foundations].find(foundation => canPlaceOnFoundation(card,foundation));
 }

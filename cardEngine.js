@@ -94,6 +94,7 @@ function animateMove(card,target){
     card.style.transform = `translate(${dx}px,${dy}px)`;
 
     requestAnimationFrame( () => {
+        
         card.style.transition = `transform 150ms ease-out`;
         card.style.transform = '';
     });
