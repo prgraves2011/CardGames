@@ -246,7 +246,6 @@ function dropStack(e){
 
     // Commit move
     moveStack(target);
-    updateStackIndices(target);    
 
     // Freecell stack index reset
     if (target.classList.contains('freecell')) {

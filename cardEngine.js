@@ -83,6 +83,7 @@ function updateStackIndices(container) {
 function animateMove(card,target){
     const first = card.getBoundingClientRect();
     target.appendChild(card);
+    updateStackIndices(target);
 
     card.style.left = '';
     card.style.top = '';
@@ -94,7 +95,7 @@ function animateMove(card,target){
     card.style.transform = `translate(${dx}px,${dy}px)`;
 
     requestAnimationFrame( () => {
-        
+        card.style.zIndex = '1000';
         card.style.transition = `transform 150ms ease-out`;
         card.style.transform = '';
     });

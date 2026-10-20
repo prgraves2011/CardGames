@@ -27,8 +27,13 @@
     transition: --deepColour 0.6s, --bgColour 0.6s ease;
 }
 :root {
-    --deepColour: rgb(25, 42, 86);
-    --bgColour: lightblue;
+    /* each theme sets the BASE colours - these change instantly */
+    --deepBase: rgb(25, 42, 86);
+    --bgBase: lightblue;
+
+    /* the animated colours follow the base colours, blending over 0.6s */
+    --deepColour: var(--deepBase);
+    --bgColour: var(--bgBase);
 }
 :root[data-theme="blue"] {
     --deepColour: rgb(25, 42, 86);
@@ -137,7 +142,7 @@ body {
 
 .menu-btn.active,
 .theme-btn.active {
-    outline: 1px solid var(--bgColour);
+    outline: 1px solid var(--bgBase);
     outline-offset: 2px;
 }
 
