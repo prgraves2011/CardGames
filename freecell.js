@@ -1,3 +1,4 @@
+// Helper functions
 function isValidStack(stack) {
     for (let i = 0; i < stack.length - 1; i++) {
         const a = parseCard(stack[i]);
@@ -12,7 +13,6 @@ function isValidStack(stack) {
     }
     return true;
 }
-
 function canPlaceStackOnColumn(stack, columnEl) {
     // Rule 1: the moving stack itself must be valid
     if (!isValidStack(stack)) return false;
@@ -31,7 +31,6 @@ function canPlaceStackOnColumn(stack, columnEl) {
         rank_val[movingTop.rank] === rank_val[targetTop.rank] - 1
     );
 }
-
 function canPlaceOnFoundation (cardEl, foundationEl) {
     const { rank, suit} = parseCard(cardEl);
     const cards = [...foundationEl.children].filter(el => el.classList.contains('card'));
@@ -49,12 +48,9 @@ function canPlaceOnFoundation (cardEl, foundationEl) {
         rank_val[rank] === rank_val[top.rank] +1
     );
 }
-
 function isFreeCellEmpty(cell) {
     return cell.querySelectorAll('.card').length === 0;
 }
-
-// helper functions for 'max-move-stack' rule
 function countEmptyFreeCells () {
     return document.querySelectorAll('.freecell:empty').length;
 }
@@ -155,11 +151,13 @@ function dealFreecell() {
 // prevent drag native behaviour
 document.addEventListener('dragstart', e => e.preventDefault());
 
-// drag state variables
+// Global variables
 let draggedStack = [];
 let dragOffsetX = 0;
 let dragOffsetY = 0;
+let stackOffsets = [];
 let sourceContainer = null;
+let moveHistory = [];
 
 // pointer-down
 document.addEventListener('pointerdown',startDrag);
@@ -189,12 +187,13 @@ function startDrag(e) {
 };
 
 function prepareDraggedCards(stack){
+    const leadTop = stack[0].getBoundingClientRect().top;
+    stackOffsets = stack.map(c => c.getBoundingClientRect().top - leadTop);
     stack.forEach((c,i) => {
         const r = c.getBoundingClientRect();
             c.style.left = `${r.left}px`;
             c.style.top  = `${r.top}px`;
             c.style.zIndex = 1000 + i;
-            console.log(`${c.alt} index: ${c.style.zIndex}`);
             c.style.pointerEvents = 'none';
             document.body.appendChild(c);
         });    
@@ -224,7 +223,7 @@ function dragStack(e){
     // move the cards
     draggedStack.forEach((card, i) => {
         card.style.left = `${e.clientX - dragOffsetX}px`;
-        card.style.top  = `${e.clientY - dragOffsetY + i * dragSpacing}px`;
+        card.style.top  = `${e.clientY - dragOffsetY + stackOffsets[i]}px`;
     });
 }
 
@@ -315,6 +314,7 @@ function validateMove(dropTarget,leadCard){
 function moveStack(target){
     draggedStack.forEach(card => {
         animateMove(card,target);
+        console.log(`${card.alt} moved to ${target.id}`);
     });        
 }
 function cleanupDrag(){
@@ -324,35 +324,33 @@ function cleanupDrag(){
     draggedStack = [];
     sourceContainer = null;    
 }
+function saveMove(source,dest,stack){
+    if(source === dest)return;
+    moveHistory.push({source,dest,stack:[...cards]})
+}
 
-// Double-click events
+// Double-click helpers
 document.addEventListener('dblclick', e => {
     const card = e.target.closest('.card');
     if(!card) return;
     autoMove(card);
 });
-
 function autoMove(card) {
-    console.log(`Card ${card.alt} has been double-clicked`);
-
     // Check valid foundation
     const foundation = findValidFoundation(card);
     if (foundation){
-    console.log('Foundation found!');
         animateMove(card,foundation);
+        console.log(`${card.alt} moved to ${foundation.id}`);
         return;
     }
-
     // Check freecells
     const freecell = findEmptyFreecell();
     if(freecell){
-        console.log('Freecell found!');
         animateMove(card,freecell);
+        console.log(`${card.alt} moved to ${freecell.id}`);
         return;
     }
 }
-
-// Double-click helpers
 function findEmptyFreecell() {
     const freecells = document.querySelectorAll('.freecell');
     return [...freecells].find(cell => isFreeCellEmpty(cell));
