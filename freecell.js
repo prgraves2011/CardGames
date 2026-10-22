@@ -66,6 +66,24 @@ function canMoveStack(stack) {
     return stack.length <= maxMoveableStckSize();
 }
 
+// Move History
+class MoveHistory {
+    #moves = [];
+    push(source,dest,stack){
+        if(source === dest) return;
+        this.#moves.push({source,dest,stack:[...cards]});
+    }
+    pop(){
+        return this.#moves.pop();
+    }
+    clear(){
+        this.#moves.length = 0;
+    }
+    get canUndo(){
+        return this.#moves.length > 0;
+    }
+}
+
 // FREECELL loader
 function loadFreecell(container) {
 
@@ -115,6 +133,7 @@ function loadFreecell(container) {
 
     // deal freecell after DOM is built
     dealFreecell();
+    const moveHistory = new moveHistory();
 }
 function dealFreecell() {
 
@@ -245,6 +264,8 @@ function dropStack(e){
 
     // Commit move
     moveStack(target);
+    moveHistory.push(sourceContainer,dropTarget,draggedStack);
+    console.log(moveHistory.at(-1).alt);
 
     // Freecell stack index reset
     if (target.classList.contains('freecell')) {
@@ -314,7 +335,6 @@ function validateMove(dropTarget,leadCard){
 function moveStack(target){
     draggedStack.forEach(card => {
         animateMove(card,target);
-        console.log(`${card.alt} moved to ${target.id}`);
     });        
 }
 function cleanupDrag(){
@@ -323,10 +343,6 @@ function cleanupDrag(){
     });
     draggedStack = [];
     sourceContainer = null;    
-}
-function saveMove(source,dest,stack){
-    if(source === dest)return;
-    moveHistory.push({source,dest,stack:[...cards]})
 }
 
 // Double-click helpers
