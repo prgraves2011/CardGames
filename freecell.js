@@ -84,6 +84,19 @@ class MoveHistory {
     }
 }
 
+document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();   // stop the browser's own undo
+        undo();
+    }
+});
+
+function undo() {
+    const move = moveHistory.pop();
+    if (!move) {console.log('Nothing to undo.'); return;}
+    console.log(`Undo: ${move.to.id} to ${move.from.id}`, move.cards.map(c => c.alt));
+}
+
 // FREECELL loader
 function loadFreecell(container) {
 
@@ -133,7 +146,7 @@ function loadFreecell(container) {
 
     // deal freecell after DOM is built
     dealFreecell();
-    const moveHistory = new moveHistory();
+    moveHistory = new MoveHistory();
 }
 function dealFreecell() {
 
@@ -176,7 +189,7 @@ let dragOffsetX = 0;
 let dragOffsetY = 0;
 let stackOffsets = [];
 let sourceContainer = null;
-let moveHistory = [];
+let moveHistory = null;
 
 // pointer-down
 document.addEventListener('pointerdown',startDrag);
@@ -264,8 +277,7 @@ function dropStack(e){
 
     // Commit move
     moveStack(target);
-    moveHistory.push(sourceContainer,dropTarget,draggedStack);
-    console.log(moveHistory.at(-1).alt);
+    moveHistory.push(sourceContainer,target,draggedStack);
 
     // Freecell stack index reset
     if (target.classList.contains('freecell')) {
@@ -356,14 +368,12 @@ function autoMove(card) {
     const foundation = findValidFoundation(card);
     if (foundation){
         animateMove(card,foundation);
-        console.log(`${card.alt} moved to ${foundation.id}`);
         return;
     }
     // Check freecells
     const freecell = findEmptyFreecell();
     if(freecell){
         animateMove(card,freecell);
-        console.log(`${card.alt} moved to ${freecell.id}`);
         return;
     }
 }
