@@ -156,6 +156,7 @@ function dealFreecell() {
 
     // prepare board and deck
     clearContainers('.column, .freecell, .foundation');
+    moveHistory.clear();
     const deck = createDeck();
     shuffleDeck(deck);
 
@@ -216,7 +217,7 @@ function startDrag(e) {
     dragOffsetY = e.clientY - rect.top;
 
     dragStartX = e.clientX;
-    dragstartY = e.clientY;
+    dragStartY = e.clientY;
     dragStarted = false;
 };
 
@@ -368,19 +369,21 @@ document.addEventListener('dblclick', e => {
 function autoMove(card) {
 
     // If no move is required do nothing
-    if(card.parentElement.classList.contains('freecell')) return;
+    let source = card.parentElement;
     if(card.parentElement.classList.contains('foundation')) return;
 
     // Check valid foundation
     const foundation = findValidFoundation(card);
     if (foundation){
+        moveHistory.push(source,foundation,[card]);
         animateMove(card,foundation);
         return;
     }
 
     // Check freecells
     const freecell = findEmptyFreecell();
-    if(freecell){
+    if(freecell && !source.classList.contains('freecell')){
+        moveHistory.push(source,freecell,[card]);
         animateMove(card,freecell);
         return;
     }
