@@ -71,7 +71,8 @@ class MoveHistory {
     #moves = [];
     push(source,dest,stack){
         if(source === dest) return;
-        this.#moves.push({source,dest,stack:[...cards]});
+        console.log('push called:', source?.id, '→', dest?.id);
+        this.#moves.push({source,dest,stack:[...stack]});
     }
     pop(){
         return this.#moves.pop();
@@ -82,7 +83,11 @@ class MoveHistory {
     get canUndo(){
         return this.#moves.length > 0;
     }
+    peek(){
+        return this.#moves.at(-1);
+    }
 }
+let moveHistory = new MoveHistory();
 
 document.addEventListener('keydown', e => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
@@ -90,11 +95,11 @@ document.addEventListener('keydown', e => {
         undo();
     }
 });
-
 function undo() {
     const move = moveHistory.pop();
     if (!move) {console.log('Nothing to undo.'); return;}
-    console.log(`Undo: ${move.to.id} to ${move.from.id}`, move.cards.map(c => c.alt));
+    move.stack.forEach(card => animateMove(card,move.source));
+    console.log(`Undo: ${move.dest.id} to ${move.source.id}`, move.stack.map(c => c.alt));
 }
 
 // FREECELL loader
@@ -146,7 +151,6 @@ function loadFreecell(container) {
 
     // deal freecell after DOM is built
     dealFreecell();
-    moveHistory = new MoveHistory();
 }
 function dealFreecell() {
 
@@ -189,7 +193,6 @@ let dragOffsetX = 0;
 let dragOffsetY = 0;
 let stackOffsets = [];
 let sourceContainer = null;
-let moveHistory = null;
 
 // pointer-down
 document.addEventListener('pointerdown',startDrag);
@@ -212,7 +215,6 @@ function startDrag(e) {
     dragOffsetX = e.clientX - rect.left;
     dragOffsetY = e.clientY - rect.top;
 
-    // prepareDraggedCards(draggedStack); // REPLACED
     dragStartX = e.clientX;
     dragstartY = e.clientY;
     dragStarted = false;
@@ -364,12 +366,18 @@ document.addEventListener('dblclick', e => {
     autoMove(card);
 });
 function autoMove(card) {
+
+    // If no move is required do nothing
+    if(card.parentElement.classList.contains('freecell')) return;
+    if(card.parentElement.classList.contains('foundation')) return;
+
     // Check valid foundation
     const foundation = findValidFoundation(card);
     if (foundation){
         animateMove(card,foundation);
         return;
     }
+
     // Check freecells
     const freecell = findEmptyFreecell();
     if(freecell){
