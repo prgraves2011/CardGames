@@ -69,19 +69,32 @@ function canMoveStack(stack) {
 // Move History
 class MoveHistory {
     #moves = [];
+    #undone = [];
     push(source,dest,stack){
         if(source === dest) return;
         console.log('push called:', source?.id, '→', dest?.id);
         this.#moves.push({source,dest,stack:[...stack]});
+        this.#undone.length = 0;
     }
-    pop(){
-        return this.#moves.pop();
+    undo(){
+        const move = this.#moves.pop();
+        if(move) this.#undone.push(move);
+        return move;
+    }
+    redo(){
+        const move = this.#undone.pop();
+        if(move) this.#moves.push(move);
+        return move;
     }
     clear(){
         this.#moves.length = 0;
+        this.#undone.length = 0;
     }
     get canUndo(){
         return this.#moves.length > 0;
+    }
+    get canUndo(){
+        return this.#undone.length > 0;
     }
     peek(){
         return this.#moves.at(-1);
@@ -90,16 +103,29 @@ class MoveHistory {
 let moveHistory = new MoveHistory();
 
 document.addEventListener('keydown', e => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
-        e.preventDefault();   // stop the browser's own undo
+    if (!(e.ctrlKey || e.metaKey)) return;
+    const key = e.key.toLowerCase();
+    if (key === 'z' && !e.shiftKey){
+        e.preventDefault();
         undo();
+    } else if ((key === 'z' && e.shiftKey) || key === 'y') {
+        e.preventDefault();
+        redo();
+        }
     }
-});
+);
+
 function undo() {
-    const move = moveHistory.pop();
+    const move = moveHistory.undo();
     if (!move) {console.log('Nothing to undo.'); return;}
     move.stack.forEach(card => animateMove(card,move.source));
     console.log(`Undo: ${move.dest.id} to ${move.source.id}`, move.stack.map(c => c.alt));
+}
+function redo() {
+    const move = moveHistory.redo();
+    if (!move) {console.log('Nothing to redo.'); return;}
+    move.stack.forEach(card => animateMove(card,move.dest));
+    console.log(`Redo: ${move.source.id} to ${move.dest.id}`, move.stack.map(c => c.alt));
 }
 
 // FREECELL loader
