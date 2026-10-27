@@ -49,19 +49,40 @@ function resetCurrentGame() {
 
 // zoom control
 let zoomLevel = 1;
+let autoFit = false;
 function zoomIn() {
     zoomLevel += 0.1;
     if (zoomLevel > 1.5) zoomLevel = 1.5; // Max zoom
     applyZoom();
+    setAutoFit(false);
 }
 function zoomOut() {
     zoomLevel -= 0.1;
     if (zoomLevel < 0.8) zoomLevel = 0.8; // Min zoom
     applyZoom();
+    setAutoFit(false);
 }
 function applyZoom() {
     document.documentElement.style.setProperty('--zoom', zoomLevel);
 }
+function fitToWindow() {
+    const board = document.getElementById('game-container');
+    const menu  = document.querySelector('.bottom-menu');
+    const current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--zoom'));
+    const baseW = board.offsetWidth  / current;      // size at zoom 1
+    const baseH = board.offsetHeight / current;
+    zoomLevel = Math.min(window.innerWidth / baseW, (window.innerHeight - menu.offsetHeight) / baseH);
+    applyZoom();
+}
+function setAutoFit(on) {
+    autoFit = on;
+    document.querySelector('.zoom-control').classList.toggle('auto', on);
+    document.getElementById('fit-btn').setAttribute('aria-pressed', on);
+    if (on) fitToWindow();
+}
+
+function toggleAutoFit() { setAutoFit(!autoFit); }
+window.addEventListener('resize', () => { if (autoFit) fitToWindow(); });
 
 // theme switcher
 document.addEventListener(

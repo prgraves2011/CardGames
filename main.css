@@ -58,6 +58,8 @@ body {
     position: relative;
     padding: 16px;
     transition: transform 0.2s ease;
+    width: fit-content;
+    margin: 0 auto;
 }
 
 .bottom-menu {
@@ -113,6 +115,20 @@ body {
 .zoom-btn {
     width: 44px;
     height: 44px;
+}
+
+/* auto-fit ON: highlight the fit button, dim the zoom buttons */
+.zoom-control.auto #fit-btn {
+    outline: 1px solid var(--bgBase);
+    outline-offset: 2px;
+}
+.zoom-control.auto .zoom-btn:not(#fit-btn) {
+    opacity: 0.5;
+}
+
+/* auto-fit OFF: dim the fit button */
+.zoom-control:not(.auto) #fit-btn {
+    opacity: 0.5;
 }
 
 /* FONT FOR + AND - */
