@@ -117,8 +117,13 @@ document.addEventListener('keydown', e => {
 
 function undo() {
     const move = moveHistory.undo();
-    if (!move) {console.log('Nothing to undo.'); return;}
+    if (!move) {
+        console.log('Nothing to undo.'); return;
+    }
+    // const { source, dest, stack } = move;
     move.stack.forEach(card => animateMove(card,move.source));
+    updateStackIndices(move.source);
+    updateStackIndices(move.dest);
     console.log(`Undo: ${move.dest.id} to ${move.source.id}`, move.stack.map(c => c.alt));
 }
 function redo() {

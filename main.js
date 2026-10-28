@@ -48,8 +48,11 @@ function resetCurrentGame() {
 }
 
 // zoom control
+const BOARD_W = 968;
+const BOARD_H = 500;
 let zoomLevel = 1;
 let autoFit = false;
+
 function zoomIn() {
     zoomLevel += 0.1;
     if (zoomLevel > 1.5) zoomLevel = 1.5; // Max zoom
@@ -68,10 +71,7 @@ function applyZoom() {
 function fitToWindow() {
     const board = document.getElementById('game-container');
     const menu  = document.querySelector('.bottom-menu');
-    const current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--zoom'));
-    const baseW = board.offsetWidth  / current;      // size at zoom 1
-    const baseH = board.offsetHeight / current;
-    zoomLevel = Math.min(window.innerWidth / baseW, (window.innerHeight - menu.offsetHeight) / baseH);
+    zoomLevel = Math.min(window.innerWidth / BOARD_W, (window.innerHeight - menu.offsetHeight) / BOARD_W);
     applyZoom();
 }
 function setAutoFit(on) {
