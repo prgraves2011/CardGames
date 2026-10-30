@@ -117,20 +117,13 @@ document.addEventListener('keydown', e => {
 
 function undo() {
     const move = moveHistory.undo();
-    if (!move) {
-        console.log('Nothing to undo.'); return;
-    }
-    // const { source, dest, stack } = move;
-    move.stack.forEach(card => animateMove(card,move.source));
-    updateStackIndices(move.source);
-    updateStackIndices(move.dest);
-    console.log(`Undo: ${move.dest.id} to ${move.source.id}`, move.stack.map(c => c.alt));
+    if (!move) {console.log('Nothing to undo.'); return;}
+        commitMove(move.dest,move.source,move.stack,false);
 }
 function redo() {
     const move = moveHistory.redo();
     if (!move) {console.log('Nothing to redo.'); return;}
-    move.stack.forEach(card => animateMove(card,move.dest));
-    console.log(`Redo: ${move.source.id} to ${move.dest.id}`, move.stack.map(c => c.alt));
+        commitMove(move.source,move.dest,move.stack,false);
 }
 
 // FREECELL loader
@@ -310,8 +303,7 @@ function dropStack(e){
     const target = validateMove(dropTarget,leadCard);
 
     // Commit move
-    moveStack(target);
-    moveHistory.push(sourceContainer,target,draggedStack);
+    commitMove(sourceContainer,target,draggedStack);
 
     // Freecell stack index reset
     if (target.classList.contains('freecell')) {
@@ -406,16 +398,14 @@ function autoMove(card) {
     // Check valid foundation
     const foundation = findValidFoundation(card);
     if (foundation){
-        moveHistory.push(source,foundation,[card]);
-        animateMove(card,foundation);
+        commitMove(source,foundation,[card]);
         return;
     }
 
     // Check freecells
     const freecell = findEmptyFreecell();
     if(freecell && !source.classList.contains('freecell')){
-        moveHistory.push(source,freecell,[card]);
-        animateMove(card,freecell);
+        commitMove(source,freecell,[card]);
         return;
     }
 }

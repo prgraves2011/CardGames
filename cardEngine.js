@@ -105,3 +105,17 @@ function animateMove(card,target){
         card.style.zIndex = '';
     }, {once:true});
 }
+
+
+// Shared Commit Move Function
+
+function commitMove(sourceCon,destCon,stack,record=true) {
+    stack.forEach(card => {
+        animateMove(card,destCon);        
+    });
+    updateStackIndices(sourceCon);
+    updateStackIndices(destCon);
+    if(record){
+        moveHistory.push(sourceCon,destCon,stack);
+    }
+}
