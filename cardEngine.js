@@ -1,5 +1,6 @@
-// CARD UTILITIES
+"use strict";
 
+// CARD UTILITIES
 const rank_val = {
     A: 1,
     '2': 2,
@@ -23,11 +24,38 @@ const suitColor = {
     H: 'R',
 };
 
-function parseCard(cardEl) {
-    const id = cardEl.alt; // e.g.: '10H'
-    const suit = id.slice(-1);
-    const rank = id.slice(0, -1);
-    return { rank, suit };
+const rankToWord = {
+    A: 'Ace',
+    '2': 'Two',
+    '3': 'Three',
+    '4': 'Four',
+    '5': 'Five',
+    '6': 'Six',
+    '7': 'Seven',
+    '8': 'Eight',
+    '9': 'Nine',
+    '10': 'Ten',
+    J: 'Jack',
+    Q: 'Queen',
+    K: 'King'
+};
+
+const suitToWord = {
+    H: 'Hearts',
+    C: 'Clubs',
+    D: 'Diamonds',
+    S: 'Spades'
+};
+
+function parseCard(card){
+    const name = card.dataset.card;
+    return parseCardData(name);
+}
+
+function parseCardData(name){
+    const suit = name.charAt(name.length-1);
+    const rank = name.substring(0,name.length-1);
+    return {rank,suit};
 }
 
 

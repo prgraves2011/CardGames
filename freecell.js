@@ -1,3 +1,5 @@
+"use strict";
+
 // Helper functions
 function isValidStack(stack) {
     for (let i = 0; i < stack.length - 1; i++) {
@@ -198,7 +200,9 @@ function dealFreecell() {
         const card = document.createElement('img');
         card.className = 'card';
         card.src = `cards/${deck[i]}.png`;
-        card.alt = deck[i];
+        card.dataset.card = deck[i];
+        const {rank,suit} = parseCard(card);
+        card.alt = `${rankToWord[rank]} of ${suitToWord[suit]}`;
         card.draggable = false;
 
         card.style.setProperty('--stack-index', stackIndex);
