@@ -15,13 +15,9 @@ function isValidRun([...cardObj]) {
     );
 }
 
-// Write a foundation function.
-// It takes the card being placed and the foundation's top card,
-// or nothing when the foundation is empty.
-// Check the empty case first: only an Ace.
-// Otherwise the card must be the same suit and exactly one rank higher.
-function canGoOnFoundation(foundationCard,newCard) {
-    return (
-        
-    );
+function canGoOnFoundation(foundationCard, newCard) {   // foundationCard = {rank, suit} or null, RETURN true/false
+    if (!foundationCard) return newCard.rank === 'A';
+    const foundRank = rank_val[foundationCard.rank];
+    const newRank   = rank_val[newCard.rank];
+    return newCard.suit === foundationCard.suit && newRank === foundRank + 1;
 }
