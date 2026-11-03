@@ -1,21 +1,14 @@
 "use strict";
 
 // Helper functions
-function isValidStack(stack) {
-    for (let i = 0; i < stack.length - 1; i++) {
-        const a = parseCard(stack[i]);
-        const b = parseCard(stack[i + 1]);
-
-        if (
-            suitColor[a.suit] === suitColor[b.suit] ||
-            rank_val[a.rank] !== rank_val[b.rank] + 1
-        ) {
-            return false;
-        }
-    }
-    return true;
+function isValidStack(stack) { // [elements] => Y/N
+    return isValidRun(
+        stack.map(
+            parseCard
+        )
+    );
 }
-function canPlaceStackOnColumn(stack, columnEl) {
+function canPlaceStackOnColumn(stack, columnEl) { // [elements], element => Y/N
     // Rule 1: the moving stack itself must be valid
     if (!isValidStack(stack)) return false;
 
@@ -25,30 +18,17 @@ function canPlaceStackOnColumn(stack, columnEl) {
     if (cards.length === 0) return true;
 
     // Rule 3: otherwise compare against top card
-    const movingTop = parseCard(stack[0]);
+    const movingLead = parseCard(stack[0]);
     const targetTop = parseCard(cards[cards.length - 1]);
 
+
     return (
-        suitColor[movingTop.suit] !== suitColor[targetTop.suit] &&
-        rank_val[movingTop.rank] === rank_val[targetTop.rank] - 1
+        isValidChild(targetTop,movingLead)
     );
 }
-function canPlaceOnFoundation (cardEl, foundationEl) {
-    const { rank, suit} = parseCard(cardEl);
-    const cards = [...foundationEl.children].filter(el => el.classList.contains('card'));
-
-    // empty foundation - ACE only
-    if (cards.length === 0) {
-        return rank === 'A';
-    }
-
-    const topCard = cards[cards.length - 1];
-    const top = parseCard(topCard);
-
-    return (
-        suit === top.suit &&
-        rank_val[rank] === rank_val[top.rank] +1
-    );
+function canPlaceOnFoundation(newCard,foundation) { // element, element => Y/N
+    const topCard = foundation.lastElementChild;
+    return canGoOnFoundation(topCard && parseCard(topCard),parseCard(newCard));
 }
 function isFreeCellEmpty(cell) {
     return cell.querySelectorAll('.card').length === 0;
