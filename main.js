@@ -71,7 +71,7 @@ function applyZoom() {
 function fitToWindow() {
     const board = document.getElementById('game-container');
     const menu  = document.querySelector('.bottom-menu');
-    zoomLevel = Math.min(window.innerWidth / BOARD_W, (window.innerHeight - menu.offsetHeight) / BOARD_W);
+    zoomLevel = Math.min(window.innerWidth / BOARD_H, (window.innerHeight - menu.offsetHeight) / BOARD_W);
     applyZoom();
 }
 function setAutoFit(on) {
