@@ -93,7 +93,7 @@ function startDrag(e) {
 
     // prevent invalid stacks moving
     const stack = getMovingStack(card);
-    if(!isValidStack(stack)) return;
+    if(!freecellRules.canPickup(stack)) return;
     
     sourceContainer = card.parentElement;    
     draggedStack = stack;

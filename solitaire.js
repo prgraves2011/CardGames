@@ -50,5 +50,6 @@ function loadSolitaire(container) {
     }
 
     // deal solitare after DOM is built
+    currentGameRules = null;
     dealSolitaire();
 }

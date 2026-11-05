@@ -48,6 +48,21 @@ function canMoveStack(stack) {
     return stack.length <= maxMoveableStckSize();
 }
 
+const freecellRules = {
+    canPickup(stack){
+        return isValidStack(stack);
+    },
+    canDropOnColumn(stack,column){
+        return canPlaceStackOnColumn(stack,column) && canMoveStack(stack);
+    },
+    canDropOnFreecell(stack,cell){
+        return stack.length === 1 && isFreeCellEmpty(cell);
+    },
+    canDropOnFoundation(stack,foundation){
+        return stack.length === 1 && canPlaceOnFoundation(stack[0],foundation);
+    },
+};
+
 // FREECELL loader
 function loadFreecell(container) {
 
@@ -96,6 +111,7 @@ function loadFreecell(container) {
     }
 
     // deal freecell after DOM is built
+    currentGameRules = freecellRules;
     dealFreecell();
 }
 function dealFreecell() {
