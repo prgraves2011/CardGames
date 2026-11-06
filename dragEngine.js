@@ -33,6 +33,7 @@ class MoveHistory {
 let moveHistory = new MoveHistory();
 
 document.addEventListener('keydown', e => {
+    if(!currentGameRules) return;
     if (!(e.ctrlKey || e.metaKey)) return;
     const key = e.key.toLowerCase();
     if (key === 'z' && !e.shiftKey){
@@ -84,6 +85,7 @@ let dragStarted = false;
 // pointer-down
 document.addEventListener('pointerdown',startDrag);
 function startDrag(e) {
+    if(!currentGameRules) return;
 
     const card = e.target.closest('.card');
     if (!card) return;
@@ -143,6 +145,8 @@ function dragStack(e){
 // pointer-up
 document.addEventListener('pointerup',dropStack);
 function dropStack(e){
+    if(!currentGameRules) return;
+
     if (draggedStack.length === 0) return;
     if(!dragStarted) {
         draggedStack = [];
@@ -150,68 +154,22 @@ function dropStack(e){
         return;
     }
     const dropTarget = e.target.closest('.foundation, .freecell, .column');
-    const leadCard = draggedStack[0];
-    const target = validateMove(dropTarget,leadCard);
+    const target = validateMove(currentGameRules,dropTarget,draggedStack);
     commitMove(sourceContainer,target,draggedStack);
     cleanupDrag();
 }
-function validateMove(dropTarget,leadCard){
-    let target = dropTarget || sourceContainer;
-
-    // Freecell must be empty
-    if (
-        dropTarget &&
-        dropTarget.classList.contains('freecell') &&
-        !isFreeCellEmpty(dropTarget)
-    ) {
-        console.log('Freecell not empty');
-        return sourceContainer;
+function validateMove(rlues,dropTarget,stack){
+    if(!dropTarget) return sourceContainer;
+    if(dropTarget.classList.contains('column')) {
+        return currentGameRules.canDropOnColumn(stack,dropTarget) ? dropTarget : sourceContainer;
     }
-
-    // Freecell only accepts one card
-    if (
-        dropTarget &&
-        dropTarget.classList.contains('freecell') &&
-        draggedStack.length !== 1
-    ) {
-        console.log('No more than one card in a freecell');
-        return sourceContainer;
+    if(dropTarget.classList.contains('freecell')) {
+        return currentGameRules.canDropOnFreecell(stack,dropTarget) ? dropTarget : sourceContainer;
     }
-
-    // Foundation rule (single card only)
-    if (
-        dropTarget &&
-        dropTarget.classList.contains('foundation') &&
-        (
-            draggedStack.length !== 1 ||
-            !canPlaceOnFoundation(leadCard, dropTarget)
-        )
-    ) {
-        console.log('No more than one card to a foundation at a time');
-        return sourceContainer;
+    if(dropTarget.classList.contains('foundation')) {
+        return currentGameRules.canDropOnFoundation(stack,dropTarget) ? dropTarget : sourceContainer;
     }
-
-    // Column rule (stack-aware)
-    if (
-        dropTarget &&
-        dropTarget.classList.contains('column') &&
-        !canPlaceStackOnColumn(draggedStack, dropTarget)
-    ) {
-        return sourceContainer;
-    }
-
-    // Max moveable stack rule
-    if (
-        dropTarget &&
-        dropTarget.classList.contains('column') &&
-        !canMoveStack(draggedStack)
-    ) {
-        console.log('Stack too large');
-        return sourceContainer;
-    }
-
-    // Valid target
-    return target;
+    return sourceContainer;
 }
 function cleanupDrag(){
     draggedStack.forEach(card => {
@@ -223,6 +181,8 @@ function cleanupDrag(){
 
 // Double-click helpers
 document.addEventListener('dblclick', e => {
+    if(!currentGameRules) return;
+
     const card = e.target.closest('.card');
     if(!card) return;
     autoMove(card);
@@ -240,17 +200,17 @@ function autoMove(card) {
     }
 
     // Check freecells
-    const freecell = findEmptyFreecell();
+    const freecell = findEmptyFreecell(card);
     if(freecell && !source.classList.contains('freecell')){
         commitMove(source,freecell,[card]);
         return;
     }
 }
-function findEmptyFreecell() {
+function findEmptyFreecell(card) {
     const freecells = document.querySelectorAll('.freecell');
-    return [...freecells].find(cell => isFreeCellEmpty(cell));
+    return [...freecells].find(cell => currentGameRules.canDropOnFreecell([card],cell));
 }
 function findValidFoundation(card){
     const foundations = document.querySelectorAll('.foundation');
-    return [...foundations].find(foundation => canPlaceOnFoundation(card,foundation));
+    return [...foundations].find(foundation => currentGameRules.canDropOnFoundation([card],foundation));
 }
