@@ -95,7 +95,7 @@ function startDrag(e) {
 
     // prevent invalid stacks moving
     const stack = getMovingStack(card);
-    if(!freecellRules.canPickup(stack)) return;
+    if(!currentGameRules.canPickup(stack)) return;
     
     sourceContainer = card.parentElement;    
     draggedStack = stack;
@@ -155,10 +155,13 @@ function dropStack(e){
     }
     const dropTarget = e.target.closest('.foundation, .freecell, .column');
     const target = validateMove(currentGameRules,dropTarget,draggedStack);
+    releaseStack(target);
+}
+function releaseStack(target){
     commitMove(sourceContainer,target,draggedStack);
     cleanupDrag();
 }
-function validateMove(rlues,dropTarget,stack){
+function validateMove(rules,dropTarget,stack){
     if(!dropTarget) return sourceContainer;
     if(dropTarget.classList.contains('column')) {
         return currentGameRules.canDropOnColumn(stack,dropTarget) ? dropTarget : sourceContainer;
@@ -177,6 +180,17 @@ function cleanupDrag(){
     });
     draggedStack = [];
     sourceContainer = null;    
+}
+
+// Pointer-leave
+document.addEventListener('pointercancel',cancelDrag);
+document.addEventListener('DOMContentLoaded', () => {
+    const board = document.getElementById('game-container');
+    board.addEventListener('pointerleave',cancelDrag);
+})
+function cancelDrag(){
+    if(!dragStarted) return;
+    releaseStack(sourceContainer);
 }
 
 // Double-click helpers

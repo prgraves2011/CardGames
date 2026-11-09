@@ -85,7 +85,7 @@ function shuffleDeck(deck){
     return deck;
 }
 
-function clearContainers(selector){
+function clearContainers(){
     [...document.querySelectorAll('.column, .freecell, .foundation')].forEach(container => {
         container.innerHTML = '';
     });
@@ -123,7 +123,7 @@ function animateMove(card,target){
     card.style.transform = `translate(${dx}px,${dy}px)`;
 
     requestAnimationFrame( () => {
-        card.style.zIndex = '1000';
+        card.style.zIndex = 'var(--cardZindex)';
         card.style.transition = `transform 150ms ease-out`;
         card.style.transform = '';
     });

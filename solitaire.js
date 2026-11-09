@@ -53,3 +53,7 @@ function loadSolitaire(container) {
     currentGameRules = null;
     dealSolitaire();
 }
+
+function dealSolitaire(){
+    
+}
