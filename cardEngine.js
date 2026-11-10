@@ -133,3 +133,32 @@ function animateMove(card,target){
         card.style.zIndex = '';
     }, {once:true});
 }
+
+
+// PILES AND DECKS
+
+class Pile {
+    #names; // Private to the class, 'Pile'
+    constructor(id, kind, names = []) { //Constructors are private
+        this.id = id;
+        this.kind = kind;
+        this.#names = [...names];
+    }
+    // Accessible to the exteded class 'Pile'...
+    get top() {return this.#names.at(-1);}
+    get size() {return this.#names.length;}
+    get isEmpty() {return this.#names.length === 0;}
+    take(count = 1) {return this.#names.splice(-count,count);}
+    add(names) {this.#names.push(names);}
+    moveTo(otherPile, count = 1) {otherPile.add(this.take(count));}
+    suffle() {
+        shuffleDeck(this.#names);
+        return this;
+    }
+}
+class Deck extends Pile { // Extended class for decks
+    #names; // Private to the class, 'Deck'
+    constructor(id = 'deck', names = createDeck()) { //Constructors are private
+        super(id, 'deck', names); // Calls the 'Class:Pile' constructor
+    }
+}
