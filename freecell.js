@@ -110,6 +110,11 @@ function loadFreecell(container) {
         tableau.appendChild(column);
     }
 
+    // Create deck
+    const deckSpace = document.createElement('div');
+    deckSpace.className = 'deckSpace';
+    container.appendChild(deckSpace);
+
     // deal freecell after DOM is built
     currentGameRules = freecellRules;
     dealFreecell();
@@ -117,9 +122,9 @@ function loadFreecell(container) {
 function dealFreecell() {
 
     // prepare board and deck
+    clearContainers('.column','.freecell','.foundation');
     moveHistory.clear();
-    const deck = createDeck();
-    shuffleDeck(deck);
+    const deck = new Deck().shuffle();
 
     // identify columns
     const columns = [];
@@ -129,19 +134,10 @@ function dealFreecell() {
 
     // deal cards
     for (let i = 0; i < 52; i++) {
-        const columnIndex = i % 8;
-        const stackIndex = Math.floor(i / 8);
-
-        const card = document.createElement('img');
-        card.className = 'card';
-        card.src = `cards/${deck[i]}.png`;
-        card.dataset.card = deck[i];
-        const {rank,suit} = parseCard(card);
-        card.alt = `${rankToWord[rank]} of ${suitToWord[suit]}`;
-        card.draggable = false;
-
-        card.style.setProperty('--stack-index', stackIndex);
-        columns[columnIndex].appendChild(card);
+        const [name] = deck.take();
+        const card = createCardElement(name);
+        card.style.setProperty('--stack-index', Math.floor(i/8));
+        columns[i % 8].appendChild(card);
     }
 
     // report finished deal

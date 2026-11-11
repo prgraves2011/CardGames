@@ -107,6 +107,10 @@ function updateStackIndices(container) {
         card.style.setProperty('--stack-index', index);
     });
 }
+function updateDeckPicture(deck,container) {
+    container.toggleAttribute('data-has-cards', !deck.isEmpty);
+    container.style.setProperty('--deck-size', deck.size);
+}
 
 function animateMove(card,target){
     const first = card.getBoundingClientRect();
@@ -134,6 +138,23 @@ function animateMove(card,target){
     }, {once:true});
 }
 
+function createCardElement(name,isFaceDown = false) {
+    const card = document.createElement('img');
+    card.className = 'card';
+    card.draggable = false;
+    if (isFaceDown) {
+        card.src = 'cards/rear.png'
+        card.alt = 'Face-down card';
+        card.dataset.faceDown = '';
+    } else {
+        const {rank,suit} = parseCardData(name);
+        card.src = `cards/${name}.png`;
+        card.alt = `${rankToWord[rank]} of ${suitToWord[suit]}`;
+        card.dataset.card = name;
+    }    
+    return card;
+}
+
 
 // PILES AND DECKS
 
@@ -151,7 +172,7 @@ class Pile {
     take(count = 1) {return this.#names.splice(-count,count);}
     add(names) {this.#names.push(names);}
     moveTo(otherPile, count = 1) {otherPile.add(this.take(count));}
-    suffle() {
+    shuffle() {
         shuffleDeck(this.#names);
         return this;
     }
