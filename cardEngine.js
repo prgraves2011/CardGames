@@ -138,7 +138,7 @@ function animateMove(card,target){
     }, {once:true});
 }
 
-function createCardElement(name,isFaceDown = false) {
+function createCardElement(name,isFaceDown = true) {
     const card = document.createElement('img');
     card.className = 'card';
     card.draggable = false;
@@ -150,9 +150,17 @@ function createCardElement(name,isFaceDown = false) {
         const {rank,suit} = parseCardData(name);
         card.src = `cards/${name}.png`;
         card.alt = `${rankToWord[rank]} of ${suitToWord[suit]}`;
-        card.dataset.card = name;
+        delete card.dataset.faceDown;
     }    
     return card;
+}
+
+function turnUp(cardEl,name) {
+    const {rank,suit} = parseCardData(name);
+    cardEl.alt = `${rankToWord[rank]} of ${suitToWord[suit]}`;
+    cardEl.src = `cards/${name}.png`;
+    cardEl.dataset.card = name;
+    delete cardEl.dataset.faceDown;
 }
 
 

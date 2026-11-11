@@ -228,3 +228,15 @@ function findValidFoundation(card){
     const foundations = document.querySelectorAll('.foundation');
     return [...foundations].find(foundation => currentGameRules.canDropOnFoundation([card],foundation));
 }
+
+// Decks and dealing
+async function dealCards(deck,deckCon,dest,count = 1) {
+    for (let i = 0; i < count; i++){
+        const [name] = deck.take();
+        const cardEl = createCardElement(name, deck.faceDown);
+        deckCon.appendChild(cardEl);
+        updateDeckPicture(deck,deckCon);
+        commitMove(deckCon,dest,[cardEl],false);
+        cardEl.addEventListener('transitionend', () => turnUp(cardEl,name), {once: true})        
+    }
+}
