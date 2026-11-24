@@ -126,7 +126,7 @@ async function dealFreecell() {
 
     //stop any deal or drag in progress
     abortDrag();
-    cancelDrag();
+    cancelDeal();
     const myDeal = dealCounter;
 
     // prepare board and deck

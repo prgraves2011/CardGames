@@ -58,16 +58,12 @@ function redo() {
         commitMove(move.source,move.dest,move.stack,false);
 }
 
-// Shared Commit Move Function
 function commitMove(sourceCon,destCon,stack,record=true) {
-    stack.forEach(card => {
-        animateMove(card,destCon);        
-    });
+    const landings = stack.map(card => animateMove(card,destCon));
     updateStackIndices(sourceCon);
     updateStackIndices(destCon);
-    if(record){
-        moveHistory.push(sourceCon,destCon,stack);
-    }
+    if(record) moveHistory.push(sourceCon,destCon,stack);
+    return Promise.all(landings);
 }
 
 // prevent drag native behaviour
@@ -263,8 +259,7 @@ async function dealCards(deck,deckCon,dest,count = 1) {
         const cardEl = createCardElement(name, deck.faceDown);
         deckCon.appendChild(cardEl);
         updateDeckPicture(deck,deckCon);
-        commitMove(deckCon,dest,[cardEl],false);
-        cardEl.addEventListener('transitionend', () => turnUp(cardEl,name), {once: true})
+        commitMove(deckCon,dest,[cardEl],false).then(() => turnUp(cardEl,name));
         await delay(dealGap);
     }
 }

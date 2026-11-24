@@ -125,17 +125,34 @@ function animateMove(card,target){
     const dy = first.top - last.top;
     card.style.transition = 'none';
     card.style.transform = `translate(${dx}px,${dy}px)`;
+    card.getBoundingClientRect();
 
-    requestAnimationFrame( () => {
-        card.style.zIndex = 'var(--cardZindex)';
-        card.style.transition = `transform 150ms ease-out`;
-        card.style.transform = '';
+    const flight = {};
+    card.flight = flight;
+
+    return new Promise(resolve => {
+        let landed = false;
+        function finish() {
+            if(landed) return;
+            landed = true;
+            card.removeEventListener('transitionend', finish);
+            card.removeEventListener('transitioncancel', finish);
+            if(card.flight === flight) {
+                card.style.transition = '';
+                if(card.parentElement !== document.body) card.style.zIndex = '';
+            }
+            resolve();
+        }
+        card.addEventListener('transitionend', finish);
+        card.addEventListener('transitioncancel', finish);
+        setTimeout(finish,300);
+
+        requestAnimationFrame( () => {
+            card.style.zIndex = 'var(--cardZindex)';
+            card.style.transition = `transform 150ms ease-out`;
+            card.style.transform = '';
+        });
     });
-
-    card.addEventListener('transitionend',() => {
-        card.style.transition = '';
-        card.style.zIndex = '';
-    }, {once:true});
 }
 
 function createCardElement(name,isFaceDown = false) {
