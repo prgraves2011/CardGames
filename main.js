@@ -1,3 +1,5 @@
+'use strict';
+
 let currentGame = null;
 
 function loadGame(gameName) {
@@ -19,8 +21,11 @@ function loadGame(gameName) {
         document.getElementById(`btn-${gameName}`).classList.add('active');
 
         // clear game container
+        abortDrag();
+        cancelDrag();
         const container = document.getElementById('game-container');
         container.innerHTML = '';
+        container.className = '';
 
         //report game selection
         console.log(`${gameName} selected`);        
@@ -69,7 +74,6 @@ function applyZoom() {
     document.documentElement.style.setProperty('--zoom', zoomLevel);
 }
 function fitToWindow() {
-    const board = document.getElementById('game-container');
     const menu  = document.querySelector('.bottom-menu');
     zoomLevel = Math.min(window.innerWidth / BOARD_W, (window.innerHeight - menu.offsetHeight) / BOARD_H);
     applyZoom();

@@ -1,33 +1,36 @@
-
-
-.freecell-board {
-    padding: 16px;
-}
-
-.top-row {
+.game-freecell .top-row {
     display: flex;
     justify-content: center;
-    gap: 96px;
-    margin-bottom: 24px;
+    gap: calc(96px * var(--zoom));
+    margin-bottom: calc(24px * var(--zoom));
 }
 
-.freecells,
-.foundations {
+.game-freecell .freecells,
+.game-freecell .foundations {
     display: flex;
-    gap: 12px;
+    gap: calc(12px * var(--zoom));
 }
 
-.freecell,
-.foundation,
-.deckSpace {
-    position: relative;
+.game-freecell .freecell,
+.game-freecell .foundation,
+.game-freecell .deckSpace {
     width: var(--card-w);
     height: var(--card-h);
     border-radius: 6px;
     background-color: var(--deepColour);
 }
 
-.deckSpace[data-has-cards] {
+.game-freecell .freecell,
+.game-freecell .foundation {
+    position: relative;
+}
+
+.game-freecell .deckSpace {
+    position: absolute;
+    bottom: 10px;
+}
+
+.game-freecell .deckSpace[data-has-cards] {
     background: url('cards/rear.png') center / cover;
     box-shadow:
         1px 1px 0 rgba(0,0,0,0.35),
@@ -35,37 +38,28 @@
         3px 3px 0 rgba(0,0,0,0.15);
 }
 
-.deckSpace .card {
-    top: 0;
-}
-
-.tableau {
+.game-freecell .tableau {
     display: grid;
     grid-template-columns: repeat(8, var(--card-w));
-    gap: calc(16px * var(--zoom));
+    gap: var(--gap);
     justify-content: center;
 }
 
-.column {
+.game-freecell .column {
     position: relative;
-    min-height: 500px;
+    min-height: calc(350px * var(--zoom));
     width: var(--card-w);
 }
 
-.card {
-    position: absolute;
-    width: var(--card-w);
-    height: var(--card-h);
-}
-
-.column .card {
+.game-freecell .column .card {
     top: calc(var(--stack-index) * var(--fan));
     left:0;
     right:0;
     margin:0 auto;
 }
 
-.foundation .card,
-.freecell .card {
+.game-freecell .foundation .card,
+.game-freecell .freecell .card,
+.game-freecell .deckSpace .card {
     top: 0;
 }

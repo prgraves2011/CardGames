@@ -2,6 +2,8 @@
 
 // SOLITAIRE loader
 function loadSolitaire(container) {
+    // Scope Freecell's CSS to container
+    container.className = 'game-solitaire';
 
     //  create top row
     const topRow = document.createElement('div');

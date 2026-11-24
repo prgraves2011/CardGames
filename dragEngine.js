@@ -1,6 +1,8 @@
 "use strict";
 
 let currentGameRules = null;
+let isDealing = false;
+let dealCounter = 0;
 
 // Move History
 class MoveHistory {
@@ -33,7 +35,7 @@ class MoveHistory {
 let moveHistory = new MoveHistory();
 
 document.addEventListener('keydown', e => {
-    if(!currentGameRules) return;
+    if(!currentGameRules || isDealing) return;
     if (!(e.ctrlKey || e.metaKey)) return;
     const key = e.key.toLowerCase();
     if (key === 'z' && !e.shiftKey){
@@ -85,7 +87,7 @@ let dragStarted = false;
 // pointer-down
 document.addEventListener('pointerdown',startDrag);
 function startDrag(e) {
-    if(!currentGameRules) return;
+    if(!currentGameRules || isDealing) return;
 
     const card = e.target.closest('.card');
     if (!card) return;
@@ -145,7 +147,7 @@ function dragStack(e){
 // pointer-up
 document.addEventListener('pointerup',dropStack);
 function dropStack(e){
-    if(!currentGameRules) return;
+    if(!currentGameRules || isDealing) return;
 
     if (draggedStack.length === 0) return;
     if(!dragStarted) {
@@ -164,13 +166,13 @@ function releaseStack(target){
 function validateMove(rules,dropTarget,stack){
     if(!dropTarget) return sourceContainer;
     if(dropTarget.classList.contains('column')) {
-        return currentGameRules.canDropOnColumn(stack,dropTarget) ? dropTarget : sourceContainer;
+        return rules.canDropOnColumn(stack,dropTarget) ? dropTarget : sourceContainer;
     }
     if(dropTarget.classList.contains('freecell')) {
-        return currentGameRules.canDropOnFreecell(stack,dropTarget) ? dropTarget : sourceContainer;
+        return rules.canDropOnFreecell(stack,dropTarget) ? dropTarget : sourceContainer;
     }
     if(dropTarget.classList.contains('foundation')) {
-        return currentGameRules.canDropOnFoundation(stack,dropTarget) ? dropTarget : sourceContainer;
+        return rules.canDropOnFoundation(stack,dropTarget) ? dropTarget : sourceContainer;
     }
     return sourceContainer;
 }
@@ -192,17 +194,23 @@ function cancelDrag(){
     if(!dragStarted) return;
     releaseStack(sourceContainer);
 }
+function abortDrag(){
+    draggedStack.forEach(card => card.remove());
+    draggedStack = [];
+    sourceContainer = null;
+    dragStarted = false;
+}
 
 // Double-click helpers
 document.addEventListener('dblclick', e => {
-    if(!currentGameRules) return;
+    if(!currentGameRules || isDealing) return;
 
     const card = e.target.closest('.card');
     if(!card) return;
     autoMove(card);
 });
 function autoMove(card) {
-    let source = card.parentElement;
+    const source = card.parentElement;
     if(card !== source.lastElementChild) return; // Cannot move a card from mid-stack
     if(source.classList.contains('foundation')) return; // Nothing moves from foundations
 
@@ -230,13 +238,33 @@ function findValidFoundation(card){
 }
 
 // Decks and dealing
+const dealGap = 60;
+
+// number => Promise
+function delay(ms){
+    return new Promise(resolve => {
+        setTimeout(resolve,ms)
+    });
+}
+
+// Stops a deal in progress
+function cancelDeal(){
+    dealCounter++;
+    isDealing = false;
+}
+
+// Deck, element, element, number => Promise
 async function dealCards(deck,deckCon,dest,count = 1) {
+    const myDeal = dealCounter;
     for (let i = 0; i < count; i++){
+        if(deck.isEmpty) break;
+        if(myDeal !== dealCounter) return;
         const [name] = deck.take();
         const cardEl = createCardElement(name, deck.faceDown);
         deckCon.appendChild(cardEl);
         updateDeckPicture(deck,deckCon);
         commitMove(deckCon,dest,[cardEl],false);
-        cardEl.addEventListener('transitionend', () => turnUp(cardEl,name), {once: true})        
+        cardEl.addEventListener('transitionend', () => turnUp(cardEl,name), {once: true})
+        await delay(dealGap);
     }
 }

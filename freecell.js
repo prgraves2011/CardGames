@@ -39,13 +39,13 @@ function countEmptyFreeCells () {
 function countEmptyFreeColumns () {
     return document.querySelectorAll('.column:empty').length;
 }
-function maxMoveableStckSize() {
+function maxMoveableStackSize() {
     const freeCells = countEmptyFreeCells();
     const emptyCols = countEmptyFreeColumns();
     return (freeCells +1) * Math.pow(2, emptyCols);
 }
 function canMoveStack(stack) {
-    return stack.length <= maxMoveableStckSize();
+    return stack.length <= maxMoveableStackSize();
 }
 
 const freecellRules = {
@@ -65,6 +65,8 @@ const freecellRules = {
 
 // FREECELL loader
 function loadFreecell(container) {
+    // Scope Freecell's CSS to container
+    container.className = 'game-freecell';
 
     //  create top row
     const topRow = document.createElement('div');
@@ -113,18 +115,26 @@ function loadFreecell(container) {
     // Create deck
     const deckSpace = document.createElement('div');
     deckSpace.className = 'deckSpace';
+    deckSpace.id = 'deckSpace';
     container.appendChild(deckSpace);
 
     // deal freecell after DOM is built
     currentGameRules = freecellRules;
     dealFreecell();
 }
-function dealFreecell() {
+async function dealFreecell() {
+
+    //stop any deal or drag in progress
+    abortDrag();
+    cancelDrag();
+    const myDeal = dealCounter;
 
     // prepare board and deck
-    clearContainers('.column','.freecell','.foundation');
+    clearContainers();
     moveHistory.clear();
     const deck = new Deck().shuffle();
+    const deckEl = document.getElementById('deckSpace');
+    updateDeckPicture(deck,deckEl);
 
     // identify columns
     const columns = [];
@@ -133,13 +143,14 @@ function dealFreecell() {
     }
 
     // deal cards
-    for (let i = 0; i < 52; i++) {
-        const [name] = deck.take();
-        const card = createCardElement(name);
-        card.style.setProperty('--stack-index', Math.floor(i/8));
-        columns[i % 8].appendChild(card);
+    isDealing = true;
+    try {
+       for(let i = 0; i < 52; i++) {
+        await dealCards(deck, deckEl, columns[i % 8]);
+        if(myDeal !== dealCounter) return;
+       }
+        console.log('Freecell now dealt'); 
+    } finally {
+        if(myDeal === dealCounter) isDealing = false;
     }
-
-    // report finished deal
-    console.log('Freecell now dealt');
 }

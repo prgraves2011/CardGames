@@ -61,12 +61,26 @@ body {
     position: relative;
     box-sizing: border-box;
     padding: 16px;
-    transition: transform 0.2s ease;
     width: 100%;
     height: calc(100dvh - var(--menu-h));
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.card {
+    position: absolute;
+    width: var(--card-w);
+    height: var(--card-h);
+}
+
+.card[data-state="down"] {
+    cursor: default; /* Can't drag face-down cards */
+    pointer-events: none; /* Disable interaction */
+}
+
+.card[data-state="up"] {
+    cursor: grab;
 }
 
 .bottom-menu {

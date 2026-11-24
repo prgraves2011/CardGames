@@ -1,76 +1,54 @@
-
-.solitaire-board {
-    padding: 16px;
-}
-
-.top-row {
+.game-solitaire .top-row {
     display: flex;
     justify-content: center;
-    gap: 96px;
-    margin-bottom: 24px;
+    gap: calc(96px * var(--zoom));
+    margin-bottom: calc(24px * var(--zoom));
 }
 
-.foundations {
+.game-solitaire .deck-set,
+.game-solitaire .foundations {
     display: flex;
-    gap: 12px;
+    gap: calc(12px * var(--zoom));
 }
 
-.foundation {
+.game-solitaire .foundation {
     position: relative;
-    width: 100px;
-    height: 140px;
+    width: var(--card-w);
+    height: var(--card-h);
     border-radius: 6px;
     background-color: var(--deepColour);
 }
 
-.deck-set {
-    display: flex;
-    gap: 12px;
-}
-
-.deck,
-.discard {
+.game-solitaire .deck,
+.game-solitaire .discard {
     position: relative;
-    width: 96px;
-    height: 136px;
+    box-sizing: border-box;
+    width: var(--card-w);
+    height: var(--card-h);
     border-radius: 6px;
     border: 2px solid var(--deepColour);
 }
 
-.solitaire-tableau {
+.game-solitaire .solitaire-tableau {
     display: grid;
-    grid-template-columns: repeat(7, 100px);
-    column-gap: 16px;
+    grid-template-columns: repeat(7, var(--card-w));
+    gap: var(--gap);
     justify-content: center;
 }
 
-.column {
+.game-solitaire .column {
     position: relative;
-    min-height: 500px;
-    width: 140px;
+    min-height: calc(500px * var(--zoom));
+    width: var(--card-w);
 }
 
-.card {
-    position: absolute;
+.game-solitaire .column .card {
+    top: calc(var(--stack-index) * var(--fan));
     left: 0;
-    width: 100px;
-    height: 140px;
 }
 
-.column .card {
-    top: calc(var(--stack-index) * 25px);
-}
-
-.foundation .card,
-.card {
+.game-solitaire .foundation .card,
+.game-solitaire .deck .card,
+.game-solitaire .discard .card {
     top: 0;
-}
-
-.card[data-state="down"] {
-    cursor: default; /* Can't drag face-down cards */
-    pointer-events: none; /* Disable interaction */
-}
-
-.card[data-state="up"] {
-    cursor: grab;
 }

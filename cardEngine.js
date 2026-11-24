@@ -85,8 +85,8 @@ function shuffleDeck(deck){
     return deck;
 }
 
-function clearContainers(){
-    [...document.querySelectorAll('.column, .freecell, .foundation')].forEach(container => {
+function clearContainers(selector = '.column, .freecell, .foundation, .deckSpace'){
+    document.querySelectorAll(selector).forEach(container => {
         container.innerHTML = '';
     });
 }
@@ -138,7 +138,7 @@ function animateMove(card,target){
     }, {once:true});
 }
 
-function createCardElement(name,isFaceDown = true) {
+function createCardElement(name,isFaceDown = false) {
     const card = document.createElement('img');
     card.className = 'card';
     card.draggable = false;
@@ -147,10 +147,7 @@ function createCardElement(name,isFaceDown = true) {
         card.alt = 'Face-down card';
         card.dataset.faceDown = '';
     } else {
-        const {rank,suit} = parseCardData(name);
-        card.src = `cards/${name}.png`;
-        card.alt = `${rankToWord[rank]} of ${suitToWord[suit]}`;
-        delete card.dataset.faceDown;
+        turnUp(card,name);
     }    
     return card;
 }
@@ -168,9 +165,10 @@ function turnUp(cardEl,name) {
 
 class Pile {
     #names; // Private to the class, 'Pile'
-    constructor(id, kind, names = []) { //Constructors are private
+    constructor(id, kind, {names = [], faceDown = false} = {}) { //Constructors are private
         this.id = id;
         this.kind = kind;
+        this.faceDown = faceDown;
         this.#names = [...names];
     }
     // Accessible to the exteded class 'Pile'...
@@ -178,7 +176,7 @@ class Pile {
     get size() {return this.#names.length;}
     get isEmpty() {return this.#names.length === 0;}
     take(count = 1) {return this.#names.splice(-count,count);}
-    add(names) {this.#names.push(names);}
+    add(names) {this.#names.push(...names);}
     moveTo(otherPile, count = 1) {otherPile.add(this.take(count));}
     shuffle() {
         shuffleDeck(this.#names);
@@ -186,8 +184,7 @@ class Pile {
     }
 }
 class Deck extends Pile { // Extended class for decks
-    #names; // Private to the class, 'Deck'
     constructor(id = 'deck', names = createDeck()) { //Constructors are private
-        super(id, 'deck', names); // Calls the 'Class:Pile' constructor
+        super(id, 'deck', {names, faceDown: true}); // Calls the 'Class:Pile' constructor
     }
 }
