@@ -3,6 +3,7 @@
 let currentGameRules = null;
 let isDealing = false;
 let dealCounter = 0;
+let won = false;
 
 // Move History
 class MoveHistory {
@@ -63,7 +64,18 @@ function commitMove(sourceCon,destCon,stack,record=true) {
     updateStackIndices(sourceCon);
     updateStackIndices(destCon);
     if(record) moveHistory.push(sourceCon,destCon,stack);
-    return Promise.all(landings);
+    return Promise.all(landings)
+        .then(() => {
+            if(destCon.classList.contains('foundation')) checkWin();
+        });
+}
+
+// Check for a win
+function checkWin() {
+    if (!currentGameRules || won || isDealing) return;
+    if (currentGameRules.isWon?.()) {
+        won = true;
+    }
 }
 
 // prevent drag native behaviour
@@ -83,7 +95,7 @@ let dragStarted = false;
 // pointer-down
 document.addEventListener('pointerdown',startDrag);
 function startDrag(e) {
-    if(!currentGameRules || isDealing) return;
+    if(!currentGameRules || isDealing || won) return;
 
     const card = e.target.closest('.card');
     if (!card) return;
@@ -143,7 +155,7 @@ function dragStack(e){
 // pointer-up
 document.addEventListener('pointerup',dropStack);
 function dropStack(e){
-    if(!currentGameRules || isDealing) return;
+    if(!currentGameRules || isDealing || won) return;
 
     if (draggedStack.length === 0) return;
     if(!dragStarted) {
@@ -199,7 +211,7 @@ function abortDrag(){
 
 // Double-click helpers
 document.addEventListener('dblclick', e => {
-    if(!currentGameRules || isDealing) return;
+    if(!currentGameRules || isDealing || won) return;
 
     const card = e.target.closest('.card');
     if(!card) return;

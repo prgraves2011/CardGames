@@ -61,6 +61,9 @@ const freecellRules = {
     canDropOnFoundation(stack,foundation){
         return stack.length === 1 && canPlaceOnFoundation(stack[0],foundation);
     },
+    detectWin(){
+      const total = [...document.getElementsByClassName('column')].reduce((sum, column) => sum + column.childElementCount, 0);
+    },
 };
 
 // FREECELL loader
@@ -123,7 +126,9 @@ function loadFreecell(container) {
     dealFreecell();
 }
 async function dealFreecell() {
-
+    // Reset win flag
+    won = false;
+    
     //stop any deal or drag in progress
     abortDrag();
     cancelDeal();
