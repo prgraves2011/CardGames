@@ -75,6 +75,7 @@ function checkWin() {
     if (!currentGameRules || won || isDealing) return;
     if (currentGameRules.isWon?.()) {
         won = true;
+        showWinMessage();
     }
 }
 

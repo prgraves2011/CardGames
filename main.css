@@ -109,7 +109,8 @@ body {
 
 .menu-btn,
 .theme-btn,
-.zoom-btn {
+.zoom-btn,
+.win-btn {
     display: flex;    
     justify-content: center;
     align-items: center;
@@ -121,7 +122,8 @@ body {
 }
 
 .menu-btn,
-.zoom-btn {
+.zoom-btn,
+.win-btn {
     background-color: var(--bgColour);
     color: var(--deepColour);
     font-weight: bold;
@@ -210,4 +212,17 @@ body {
     background: center / contain no-repeat url("wallpaper.png");
     mix-blend-mode: multiply;  /* dark inks stay dark; bg color tints whites */
     opacity: 0.4;
+}
+
+.win-dialogue {
+    border: none;
+    border-radius: 12px;
+    padding: 24px 40px;
+    text-align: center;
+    background-color: var(--bgColour);
+    color: var(--deepColour);
+}
+
+.win-dialogue::backdrop {
+    background-color: rgba(0,0,0,0.5);
 }

@@ -61,8 +61,8 @@ const freecellRules = {
     canDropOnFoundation(stack,foundation){
         return stack.length === 1 && canPlaceOnFoundation(stack[0],foundation);
     },
-    detectWin(){
-      const total = [...document.getElementsByClassName('column')].reduce((sum, column) => sum + column.childElementCount, 0);
+    isWon(){
+      return [...document.getElementsByClassName('foundation')].reduce((sum, column) => sum + column.childElementCount, 0) === 52;
     },
 };
 
@@ -158,4 +158,22 @@ async function dealFreecell() {
     } finally {
         if(myDeal === dealCounter) isDealing = false;
     }
+}
+
+
+// DEBUG ONLY: sends every card to the foundations, Ace to King, one at a time,
+// so win detection can be tested without playing a whole game. Run: debugWin()
+async function debugWin() {
+    if (isDealing) { console.log('debugWin: wait for the deal to finish'); return; }
+
+    const foundations = document.querySelectorAll('.foundation');
+    const names = createDeck();                     // AH..KH, AD..KD, AC..KC, AS..KS
+
+    for (let i = 0; i < names.length; i++) {
+        const card = document.querySelector(`.card[data-card="${names[i]}"]`);
+        if (!card) { console.log('debugWin: card not found:', names[i]); return; }
+        const foundation = foundations[Math.floor(i / 13)];     // 13 cards per suit
+        await commitMove(card.parentElement, foundation, [card], false);
+    }
+    console.log('debugWin: all 52 cards moved');
 }
